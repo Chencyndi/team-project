@@ -72,4 +72,4 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 
 Team Member Signatures:
 
-Felix, Cyndi, Kristin, Rian
+Felix, Cyndi, Kristin, Rian, Jerome
