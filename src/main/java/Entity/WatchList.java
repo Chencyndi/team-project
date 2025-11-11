@@ -2,10 +2,10 @@ package Entity;
 
 import java.util.List;
 
-public class MovieList {
+public class WatchList {
     private final List<Movie> list;
 
-    public MovieList(List<Movie> list) {
+    public WatchList(List<Movie> list) {
         this.list = list;
     }
     public List<Movie> getList() {
