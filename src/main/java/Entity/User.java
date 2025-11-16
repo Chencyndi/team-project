@@ -3,12 +3,12 @@ package Entity;
 public class User {
     private final String username;
     private final String password;
-    private final Watchlist watchlist;
+    private final MovieList movieList;
 
-    public User(String username, String password, Watchlist watchlist) {
+    public User(String username, String password, MovieList watchlist) {
         this.username = username;
         this.password = password;
-        this.watchlist = watchlist;
+        this.movieList = watchlist;
     }
     public String getUsername() {
         return username;
@@ -16,7 +16,7 @@ public class User {
     public String getPassword() {
         return password;
     }
-    public Watchlist getWatchlist() {
-        return watchlist;
+    public MovieList getMovieList() {
+        return movieList;
     }
 }
