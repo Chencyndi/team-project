@@ -1,4 +1,4 @@
-package Entity;
+package movieapp.entity;
 
 public class Comment {
     private final String commentID;
