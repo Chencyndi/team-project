@@ -1,4 +1,4 @@
-package Entity;
+package movieapp.entity;
 
 import java.util.List;
 

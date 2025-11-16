@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Comment
+class Movie
+class MovieLists
+class User
+class Watchlist
+
+Comment --> User
+Movie --> Comment
+Watchlist --> Movie
+User --> Watchlist
+MovieLists --> Movie
+class Comment {
+commentID: String;
+commenter: User;
+parentComment: Comment;
+text: String;
+}
+class Movie{
+name: String;
+rate: double;
+comments: List<Comment>;
+}
+class MovieLists{
+length: int;
+name: String;
+list: List<Movie>;
+sort: String;
+}
+class User{
+username: String;
+password: String;
+watchlist: Watchlist;
+}
+class Watchlist{
+list: List<Movie>
+}
+
+@enduml

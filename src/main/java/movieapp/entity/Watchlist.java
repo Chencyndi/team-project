@@ -1,5 +1,6 @@
-package Entity;
+package movieapp.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Watchlist {
@@ -8,6 +9,7 @@ public class Watchlist {
     public Watchlist(List<Movie> list) {
         this.list = list;
     }
+    public Watchlist() {this.list = new ArrayList<>();}
     public List<Movie> getList() {
         return list;
     }
