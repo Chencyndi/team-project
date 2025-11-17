@@ -4,6 +4,7 @@ package movieapp.view;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.use_case.login.LoginOutputData;
+import movieapp.interface_adapter.login.LoginViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,18 +31,18 @@ public class LoginView extends JFrame {
         JPanel mainPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        mainPanel.add(new JLabel("Username:"));
+        mainPanel.add(new JLabel(LoginViewModel.USERNAME));
         usernameField = new JTextField();
         mainPanel.add(usernameField);
         
-        mainPanel.add(new JLabel("Password:"));
+        mainPanel.add(new JLabel(LoginViewModel.PASSWORD));
         passwordField = new JPasswordField();
         mainPanel.add(passwordField);
         
-        JButton loginButton = new JButton("Log In");
+        JButton loginButton = new JButton(LoginViewModel.LOGIN_BUTTON);
         loginButton.addActionListener(e -> handleLogin());
         
-        JButton createAccountButton = new JButton("Create Account");
+        JButton createAccountButton = new JButton(LoginViewModel.CREATE_BUTTON);
         createAccountButton.addActionListener(e -> openCreateAccountView());
         
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
