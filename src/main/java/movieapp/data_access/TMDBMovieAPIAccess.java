@@ -4,137 +4,70 @@ import movieapp.entity.Comment;
 import movieapp.entity.Movie;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import okhttp3.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TMDBMovieAPIAccess {
-    private static final String API_KEY = "YOUR_API_KEY_HERE"; // Replace with your actual API key
+    private final OkHttpClient client = new OkHttpClient();
+    private static final int SUCCESS_CODE = 200;
+    private static final String API_KEY = "cb14c2564a324df140f3ebe21f348f8f";
     private static final String BASE_URL = "https://api.themoviedb.org/3";
+    private static final String STATUS_CODE_LABEL = "status_code";
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-
-    /**
-     * Fetch the 100 most popular movies from TMDB API
-     * Uses multiple pages since API returns 20 movies per page
-     */
-    public List<Movie> fetchPopularMovies() throws Exception {
-        List<Movie> movies = new ArrayList<>();
-        int targetCount = 100;
-        int page = 1;
-
-        while (movies.size() < targetCount) {
-            String endpoint = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&page=" + page;
-            JSONObject response = makeApiCall(endpoint);
-
-            if (response == null) break;
-
-            JSONArray results = response.optJSONArray("results");
-            if (results == null || results.length() == 0) break;
-
-            for (int i = 0; i < results.length() && movies.size() < targetCount; i++) {
-                JSONObject movieJson = results.getJSONObject(i);
-                Movie movie = parseMovie(movieJson);
-                if (movie != null) {
-                    movies.add(movie);
-                }
-            }
-
-            page++;
-
-            // Safety check to avoid infinite loop
-            if (page > 10) break;
-        }
-
-        return movies;
-    }
-
-    /**
-     * Fetch the 100 most recently released movies
-     * Uses upcoming endpoint and sorts by release date
-     */
-    public List<Movie> fetchRecentlyReleasedMovies() throws Exception {
-        List<Movie> movies = new ArrayList<>();
-        int page = 1;
-
-        // Fetch multiple pages to ensure we get enough movies
-        while (movies.size() < 150 && page <= 8) {
-            String endpoint = BASE_URL + "/movie/now_playing?api_key=" + API_KEY + "&page=" + page;
-            JSONObject response = makeApiCall(endpoint);
-
-            if (response == null) break;
-
-            JSONArray results = response.optJSONArray("results");
-            if (results == null || results.length() == 0) break;
-
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject movieJson = results.getJSONObject(i);
-                Movie movie = parseMovie(movieJson);
-                if (movie != null && movie.getReleaseDate() != null) {
-                    movies.add(movie);
-                }
-            }
-
-            page++;
-        }
-
-        // Sort by release date (most recent first)
-        movies.sort((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()));
-
-        // Return top 100
-        return movies.subList(0, Math.min(100, movies.size()));
-    }
+    private static final String FALLBACK_IMAGE_URL = //TODO: Might want to remove
+            "https://images.pexels.com/photos/321552/pexels-photo-321552.jpeg"; // Fallback if poster not found
 
     /**
      * Make HTTP GET request to TMDB API
-     */
-    private JSONObject makeApiCall(String endpoint) {
-        try {
-            URL url = new URL(endpoint);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
+     **/
+    public JSONObject makeApiCall(String endpoint) throws IOException {
+        Request request = new Request.Builder()
+                .url(endpoint)
+                .get()
+                .addHeader("Accept", "application/json")
+                .build();
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) {
-                System.err.println("API call failed with response code: " + responseCode);
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                System.err.println("API call failed with HTTP code: " + response.code());
                 return null;
             }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+            ResponseBody body = response.body();
+            if (body == null) {
+                System.err.println("API call returned empty body");
+                return null;
             }
-            reader.close();
 
-            return new JSONObject(response.toString());
+            JSONObject jsonMovieList = new JSONObject(body.string()); // converts response object into JSONObject
 
-        } catch (Exception e) {
-            System.err.println("Error making API call: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            if (jsonMovieList.optInt(STATUS_CODE_LABEL, SUCCESS_CODE) != SUCCESS_CODE) {
+                System.err.println("API-level error with status: " + jsonMovieList.optInt(STATUS_CODE_LABEL));
+                return null;
+            }
+
+            return jsonMovieList;
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Network error during API call", e); //TODO: Create a custom exception
         }
     }
 
     /**
      * Parse JSON movie object into Movie entity
-     */
-
-    private Movie parseMovie(JSONObject json) {
+     **/
+    private Movie parseMovie(JSONObject jsonMovieList) throws IOException {
         try {
-            int id = json.optInt("id", -1);
-            String title = json.optString("title", "");
-            String overview = json.optString("overview", "");
-            String releaseDate = json.optString("release_date", "");
-            String posterURL = json.optString("poster_path", null);
-            double voteAverage = json.optDouble("vote_average", 0.0);
-            double popularity = json.optDouble("popularity", 0.0);
-            int voteCount = json.optInt("vote_count", 0);
+            int id = jsonMovieList.optInt("id", -1);
+            String title = jsonMovieList.optString("title", "");
+            String overview = jsonMovieList.optString("overview", "");
+            String releaseDate = jsonMovieList.optString("release_date", "");
+            String posterURL = jsonMovieList.optString("poster_path", "");
+            double voteAverage = jsonMovieList.optDouble("vote_average", 0.0);
+            double popularity = jsonMovieList.optDouble("popularity", 0.0);
+            int voteCount = jsonMovieList.optInt("vote_count", 0);
             List<Comment> comments = new ArrayList<>();
 
             // Skip movies with missing essential data
@@ -150,14 +83,82 @@ public class TMDBMovieAPIAccess {
                     comments);
 
         } catch (Exception e) {
-            System.err.println("Error parsing movie: " + e.getMessage());
-            return null;
+            throw new IOException("Error parsing movie: " + e.getMessage());
         }
     }
 
     /**
+     * Fetch the 100 most popular movies from TMDB API
+     * Uses multiple pages since API returns 20 movies per page
+     **/
+    public List<Movie> fetchPopularMovies() throws IOException {
+        List<Movie> movieList = new ArrayList<>();
+        int targetCount = 100;
+        int page = 1;
+
+        while (movieList.size() < targetCount) {
+            String endpoint = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&page=" + page;
+            JSONObject response = makeApiCall(endpoint);
+
+            if (response == null) break;
+
+            JSONArray results = response.optJSONArray("results");
+            if (results == null || results.isEmpty()) break;
+
+            for (int i = 0; i < results.length() && movieList.size() < targetCount; i++) {
+                JSONObject movieJson = results.getJSONObject(i);
+                Movie movie = parseMovie(movieJson);
+                if (movie != null) {
+                    movieList.add(movie);
+                }
+            }
+            page++;
+
+            // Safety check to avoid infinite loop
+            if (page > 10) break;
+        }
+        return movieList;
+    }
+
+    /**
+     * Fetch the 100 most recently released movies
+     * Uses upcoming endpoint and sorts by release date
+     **/
+    public List<Movie> fetchRecentlyReleasedMovies() throws IOException {
+        List<Movie> movieList = new ArrayList<>();
+        int page = 1;
+
+        // Fetch multiple pages to ensure we get enough movies
+        while (movieList.size() < 150 && page <= 8) {
+            String endpoint = BASE_URL + "/movie/now_playing?api_key=" + API_KEY + "&page=" + page;
+            JSONObject response = makeApiCall(endpoint);
+
+            if (response == null) break;
+
+            JSONArray results = response.optJSONArray("results");
+            if (results == null || results.isEmpty()) break;
+
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject movieJson = results.getJSONObject(i);
+                Movie movie = parseMovie(movieJson);
+                if (movie != null && movie.getReleaseDate() != null) {
+                    movieList.add(movie);
+                }
+            }
+
+            page++;
+        }
+
+        // Sort by release date (most recent first)
+        movieList.sort((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()));
+
+        // Returns list top 100
+        return movieList.subList(0, Math.min(100, movieList.size()));
+    }
+
+    /**
      * Get the base URL for movie poster images
-     */
+     **/
     public static String getImageBaseUrl() {
         return IMAGE_BASE_URL;
     }
