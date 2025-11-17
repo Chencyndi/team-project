@@ -1,0 +1,17 @@
+{
+  "comments": [
+    {
+      "commentID": 1,
+      "username": "max",
+      "movieID": 640146,
+      "text": "Good movie",
+      "replies": [
+        {
+          "commentID": 2,
+          "text": "I agree",
+          "username": "Luke"
+        }
+      ]
+    }
+  ]
+}
