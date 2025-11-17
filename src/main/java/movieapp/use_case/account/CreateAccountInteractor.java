@@ -29,7 +29,6 @@ public class CreateAccountInteractor implements CreateAccountInputBoundary {
             }
             
             // Create and save user
-            Watchlist watchlist = new Watchlist();
             User user = new User(inputData.getUsername(), inputData.getPassword());
             accountRepository.save(user);
             

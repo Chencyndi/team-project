@@ -12,7 +12,7 @@ public class CreateAccountController {
     }
 
     public CreateAccountOutputData createAccount(String username, String password, String confirmedPassword) {
-        CreateAccountInputData inputData = new CreateAccountInputData(username, password, confirmedPassword);
+        final CreateAccountInputData inputData = new CreateAccountInputData(username, password, confirmedPassword);
         return createAccountUseCase.execute(inputData);
     }
 
