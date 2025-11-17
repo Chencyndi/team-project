@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "username": "Luke",
+      "password": "1234",
+      "watchlist": [502356,76600],
+      "ratings": {}
+    },
+    {
+      "username": "max",
+      "password": "abcd",
+      "watchlist": [],
+      "ratings": {}
+    }
+  ]
+}
