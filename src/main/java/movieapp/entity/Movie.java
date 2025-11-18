@@ -3,6 +3,7 @@ package movieapp.entity;
 import java.util.List;
 
 public class Movie {
+
     private final int id;
     private final String title;
     private final String overview;
@@ -28,10 +29,10 @@ public class Movie {
 
     // Getter methods
     public int getId() { return id; }
-    public String getTitle() { return title; }
+    public String getName() { return title; }
     public String getOverview() { return overview; }
     public String getReleaseDate() { return releaseDate; }
-    public double getVoteAverage() { return voteAverage; }
+    public double getRate() { return voteAverage; }
     public double getPopularity() { return popularity; }
     public int getVoteCount() { return voteCount; }
     public String getPosterUrl() { return posterUrl; }

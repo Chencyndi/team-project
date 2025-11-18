@@ -5,11 +5,12 @@ import movieapp.interface_adapter.ViewModel;
 /**
  * The View Model for the Login View.
  */
-public class LoginViewModel extends ViewModel<LoginState> {
+public class LoginViewModel {
 
-    public LoginViewModel() {
-        super("log in");
-        setState(new LoginState());
-    }
+    public static final String USERNAME = "Username:";
+    public static final String PASSWORD = "Password:";
+    public static final String LOGIN_BUTTON = "Login";
+    public static final String CREATE_BUTTON = "Create Account";
+
 
 }
