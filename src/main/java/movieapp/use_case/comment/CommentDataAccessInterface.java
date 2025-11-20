@@ -7,6 +7,6 @@ import java.util.List;
 public interface CommentDataAccessInterface {
     List<Comment> getComments(Integer movieID);
     void addComment(Comment comment);
-    void addReply(Comment comment);
+    void addReply(Comment reply, String parentCommentID);
 
 }
