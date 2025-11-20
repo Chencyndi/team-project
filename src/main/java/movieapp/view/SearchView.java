@@ -100,7 +100,7 @@ public class SearchView extends JFrame {
         panel.setBackground(Color.WHITE);
         
         // Clickable movie name
-        JLabel nameLabel = new JLabel(movie.getName());
+        JLabel nameLabel = new JLabel(movie.getTitle());
         nameLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         nameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -109,7 +109,7 @@ public class SearchView extends JFrame {
         });
         
         // Rating info
-        JLabel ratingLabel = new JLabel("Rating: " + movie.getRate() + "/10");
+        JLabel ratingLabel = new JLabel("Rating: " + movie.getVoteAverage() + "/10");
         
         panel.add(nameLabel, BorderLayout.CENTER);
         panel.add(ratingLabel, BorderLayout.EAST);
