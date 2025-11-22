@@ -1,17 +1,37 @@
-{
-  "comments": [
+[
     {
-      "commentID": 1,
-      "username": "max",
-      "movieID": 640146,
-      "text": "Good movie",
-      "replies": [
-        {
-          "commentID": 2,
-          "text": "I agree",
-          "username": "Luke"
-        }
-      ]
+        "replies": ["2"],
+        "commentID": "1",
+        "movieID": 640146,
+        "text": "Good movie",
+        "username": "max"
+    },
+    {
+        "replies": [],
+        "commentID": "2",
+        "movieID": 640146,
+        "text": "I agree",
+        "username": "Luke"
+    },
+    {
+        "replies": ["r001"],
+        "commentID": "cmt001",
+        "movieID": 101,
+        "text": "This movie is great!",
+        "username": "alice"
+    },
+    {
+        "replies": [],
+        "commentID": "cmt002",
+        "movieID": 101,
+        "text": "I disagree!",
+        "username": "bob"
+    },
+    {
+        "replies": [],
+        "commentID": "r001",
+        "movieID": 101,
+        "text": "I agree with Alice!",
+        "username": "charlie"
     }
-  ]
-}
+]

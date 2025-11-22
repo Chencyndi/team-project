@@ -1,27 +1,38 @@
 package movieapp.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Comment {
     private final String commentID;
     private final User commenter;
-    private final Comment parentComment;
+    private List<Comment> replies = new ArrayList<>();
     private final String text;
+    private final Integer movieID;
 
-    public Comment(String commentID, User commenter, Comment parentComment, String text) {
+    public Comment(String commentID, User commenter, List<Comment> replies, String text, Integer movieID) {
         this.commentID = commentID;
         this.commenter = commenter;
-        this.parentComment = parentComment;
+        this.replies = replies;
         this.text = text;
+        this.movieID = movieID;
     }
-    public  String getCommentID() {
+
+    public String getCommentID() {
         return commentID;
     }
+
     public User getCommenter() {
         return commenter;
     }
-    public Comment getParentComment() {
-        return parentComment;
-    }
+
+    public List<Comment> getReplies() {return replies;}
+
+    public void addReply(Comment reply) {replies.add(reply);}
+
     public String getText() {
         return text;
     }
+
+    public Integer getMovieID() {return movieID;}
 }
