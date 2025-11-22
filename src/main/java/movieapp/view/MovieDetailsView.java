@@ -15,7 +15,7 @@ public class MovieDetailsView extends JFrame {
     }
     
     private void initializeView() {
-        setTitle("Movie: " + movie.getName());
+        setTitle("Movie: " + movie.getTitle());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -27,9 +27,9 @@ public class MovieDetailsView extends JFrame {
         JPanel infoPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         infoPanel.setBorder(BorderFactory.createTitledBorder("Movie Information"));
         
-        infoPanel.add(new JLabel("Title: " + movie.getName()));
+        infoPanel.add(new JLabel("Title: " + movie.getTitle()));
         infoPanel.add(new JLabel("Overview: " + movie.getOverview()));
-        infoPanel.add(new JLabel("Rating: " + movie.getRate() + "/10"));
+        infoPanel.add(new JLabel("Rating: " + movie.getVoteAverage() + "/10"));
         infoPanel.add(new JLabel("Comments: " + movie.getComments().size()));
         
         // Close button

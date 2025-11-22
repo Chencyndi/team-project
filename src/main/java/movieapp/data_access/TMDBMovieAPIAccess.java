@@ -3,15 +3,22 @@ package movieapp.data_access;
 import io.github.cdimascio.dotenv.Dotenv;
 import movieapp.entity.Comment;
 import movieapp.entity.Movie;
+import movieapp.use_case.movielist.MovieDataSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import okhttp3.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TMDBMovieAPIAccess {
-    private static final Dotenv dotenv = Dotenv.configure() // checks if api_key.env exists in root directory
+/**
+ * TMDB-based MovieDataSource implementation.
+ * Frameworks & Drivers layer.
+ */
+public class TMDBMovieAPIAccess implements MovieDataSource {
+
+    private static final Dotenv dotenv = Dotenv.configure()
             .directory("./")
             .filename("api_key.env")
             .ignoreIfMissing()
@@ -24,14 +31,10 @@ public class TMDBMovieAPIAccess {
     private static final String API_KEY = dotenv.get("API_KEY");
     private static final String BASE_URL = dotenv.get("BASE_URL");
     private static final String IMAGE_BASE_URL = dotenv.get("IMAGE_BASE_URL");
-    private static final String IMAGE_FALLBACK_URL = dotenv.get("IMAGE_FALLBACK_URL");
 
     private static final String STATUS_CODE_LABEL = "status_code";
 
-    /**
-     * Make HTTP GET request to TMDB API
-     **/
-    public JSONObject makeApiCall(String endpoint) throws Exception {
+    private JSONObject makeApiCall(String endpoint) throws Exception {
         Request request = new Request.Builder()
                 .url(endpoint)
                 .get()
@@ -40,109 +43,87 @@ public class TMDBMovieAPIAccess {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                System.err.println("API call failed with HTTP code: " + response.code());
-                return null;
+                throw new IOException("HTTP error " + response.code());
             }
 
             ResponseBody body = response.body();
             if (body == null) {
-                System.err.println("API call returned empty body");
-                return null;
+                throw new IOException("Empty response body");
             }
 
-            JSONObject jsonMovieList = new JSONObject(body.string()); // converts response object into JSONObject
-
-            if (jsonMovieList.optInt(STATUS_CODE_LABEL, SUCCESS_CODE) != SUCCESS_CODE) {
-                System.err.println("API-level error with status: " + jsonMovieList.optInt(STATUS_CODE_LABEL));
-                return null;
+            JSONObject json = new JSONObject(body.string());
+            if (json.optInt(STATUS_CODE_LABEL, SUCCESS_CODE) != SUCCESS_CODE) {
+                throw new IOException("API-level error status: " + json.optInt(STATUS_CODE_LABEL));
             }
 
-            return jsonMovieList;
-        }
-        catch (IOException e) {
+            return json;
+        } catch (IOException e) {
             throw new Exception("Network error during API call", e);
         }
     }
 
-    /**
-     * Parse JSON movie object into Movie entity
-     **/
-    private Movie parseMovie(JSONObject jsonMovieList) throws IOException {
+    private Movie parseMovie(JSONObject json) throws IOException {
         try {
-            int id = jsonMovieList.optInt("id", -1);
-            String title = jsonMovieList.optString("title", "");
-            String overview = jsonMovieList.optString("overview", "");
-            String releaseDate = jsonMovieList.optString("release_date", "");
-            String posterURL = jsonMovieList.optString("poster_path", "");
-            double voteAverage = jsonMovieList.optDouble("vote_average", 0.0);
-            double popularity = jsonMovieList.optDouble("popularity", 0.0);
-            int voteCount = jsonMovieList.optInt("vote_count", 0);
+            int id = json.optInt("id", -1);
+            String title = json.optString("title", "");
+            String overview = json.optString("overview", "");
+            String releaseDate = json.optString("release_date", "");
+            String posterPath = json.optString("poster_path", "");
+            double voteAverage = json.optDouble("vote_average", 0.0);
+            double popularity = json.optDouble("popularity", 0.0);
+            int voteCount = json.optInt("vote_count", 0);
+
             List<Comment> comments = new ArrayList<>();
 
-
-            if (id == -1 || title.isEmpty()) { // skips movies missing essential data
+            if (id == -1 || title.isEmpty()) {
                 return null;
             }
 
-            String fullPosterUrl = (posterURL != null && !posterURL.isEmpty())
-                    ? IMAGE_BASE_URL + posterURL
+            String fullPosterUrl = (posterPath != null && !posterPath.isEmpty())
+                    ? IMAGE_BASE_URL + posterPath
                     : null;
 
-            return new Movie(id, title, overview, releaseDate, fullPosterUrl, voteAverage, popularity, voteCount,
-                    comments);
+            // Adjust as needed
+            return new Movie(id, title, overview, releaseDate,
+                    fullPosterUrl, voteAverage, popularity, voteCount, comments);
 
         } catch (Exception e) {
-            throw new IOException("Error parsing movie: " + e.getMessage());
+            throw new IOException("Error parsing movie: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Fetch the 100 most popular movies from TMDB API
-     * Uses multiple pages since API returns 20 movies per page
-     **/
-    public List<Movie> fetchPopularMovies() throws Exception {
-        List<Movie> movieList = new ArrayList<>();
-        int targetCount = 100;
+    @Override
+    public List<Movie> fetchPopularMovies(int count) throws Exception {
+        List<Movie> movies = new ArrayList<>();
         int page = 1;
 
-        while (movieList.size() < targetCount) {
+        while (movies.size() < count && page <= 10) {
             String endpoint = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&page=" + page;
             JSONObject response = makeApiCall(endpoint);
-
-            if (response == null) break;
 
             JSONArray results = response.optJSONArray("results");
             if (results == null || results.isEmpty()) break;
 
-            for (int i = 0; i < results.length() && movieList.size() < targetCount; i++) {
+            for (int i = 0; i < results.length() && movies.size() < count; i++) {
                 JSONObject movieJson = results.getJSONObject(i);
                 Movie movie = parseMovie(movieJson);
                 if (movie != null) {
-                    movieList.add(movie);
+                    movies.add(movie);
                 }
             }
-
             page++;
-
-            if (page > 10) break; // avoids infinite loop
         }
-        return movieList;
+        return movies;
     }
 
-    /**
-     * Fetch the 100 most recently released movies
-     * Uses upcoming endpoint and sorts by release date
-     **/
-    public List<Movie> fetchRecentlyReleasedMovies() throws Exception {
-        List<Movie> movieList = new ArrayList<>();
+    @Override
+    public List<Movie> fetchRecentMovies(int count) throws Exception {
+        List<Movie> movies = new ArrayList<>();
         int page = 1;
 
-
-        while (movieList.size() < 150 && page <= 8) { // fetch multiple pages to ensure enough movies returned
+        while (movies.size() < count * 2 && page <= 8) {
             String endpoint = BASE_URL + "/movie/now_playing?api_key=" + API_KEY + "&page=" + page;
             JSONObject response = makeApiCall(endpoint);
-
-            if (response == null) break;
 
             JSONArray results = response.optJSONArray("results");
             if (results == null || results.isEmpty()) break;
@@ -150,43 +131,15 @@ public class TMDBMovieAPIAccess {
             for (int i = 0; i < results.length(); i++) {
                 JSONObject movieJson = results.getJSONObject(i);
                 Movie movie = parseMovie(movieJson);
-                if (movie != null && movie.getReleaseDate() != null) {
-                    movieList.add(movie);
+                if (movie != null && movie.getReleaseDate() != null && !movie.getReleaseDate().isEmpty()) {
+                    movies.add(movie);
                 }
             }
-
             page++;
         }
 
-        movieList.sort((m1, m2) -> m2 // sort by release date (most recent first)
-                .getReleaseDate()
-                .compareTo(m1.getReleaseDate()));
+        movies.sort((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()));
 
-        return movieList.subList(0, Math.min(100, movieList.size())); // return list top 100
-    }
-
-    /**
-     * Fetch a single movie by its TMDB ID
-     * @param movieID the TMDB movie ID
-     * @return Movie object or null if not found
-     * @throws IOException if network error occurs
-     */
-    public Movie fetchMovieByID(int movieID) throws Exception {
-        String endpoint = BASE_URL + "/movie/" + movieID + "?api_key=" + API_KEY;
-
-        JSONObject response = makeApiCall(endpoint);
-
-        if (response == null) {
-            throw new IOException("Failed to fetch movie with ID: " + movieID);
-        }
-
-        return parseMovie(response);
-    }
-
-    /**
-     * Get the base URL for movie poster images
-     **/
-    public static String getImageBaseUrl() {
-        return IMAGE_BASE_URL;
+        return movies.subList(0, Math.min(count, movies.size()));
     }
 }
