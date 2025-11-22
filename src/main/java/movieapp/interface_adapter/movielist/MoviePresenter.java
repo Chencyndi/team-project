@@ -1,24 +1,38 @@
 package movieapp.interface_adapter.movielist;
 
 import movieapp.entity.Movie;
+import movieapp.entity.MovieList;
 import movieapp.use_case.movielist.FetchMoviesOutputBoundary;
 import movieapp.use_case.movielist.FetchMoviesOutputData;
-import movieapp.use_case.movielist.SortMoviesOutputBoundary;
-import movieapp.use_case.movielist.SortMoviesOutputData;
-import movieapp.use_case.movielist.SortType;
 import movieapp.view.MovieListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Presenter for movie list use cases.
- * Interface Adapters layer.
+ * Presenter for Use Case 5 - Movie Display
+ * Interface Adapters Layer
+ *
+ * Converts entities and output data to view models
+ * Formats data for UI display
  */
-public class MoviePresenter implements FetchMoviesOutputBoundary, SortMoviesOutputBoundary {
+public class MoviePresenter implements FetchMoviesOutputBoundary {
 
     private MovieListView view;
+    private final MovieListState movieListState;
 
+    /**
+     * Create a MoviePresenter with shared MovieListState.
+     *
+     * @param movieListState shared state for the current movie list
+     */
+    public MoviePresenter(MovieListState movieListState) {
+        this.movieListState = movieListState;
+    }
+
+    /**
+     * Set the view that will display the movies.
+     */
     public void setView(MovieListView view) {
         this.view = view;
     }
@@ -27,13 +41,25 @@ public class MoviePresenter implements FetchMoviesOutputBoundary, SortMoviesOutp
     public void presentMovies(FetchMoviesOutputData outputData) {
         if (view == null) return;
 
+        // Convert Movie entities to MovieViewModels
         List<MovieViewModel> viewModels = new ArrayList<>();
+
         for (Movie movie : outputData.getMovies()) {
-            viewModels.add(createViewModel(movie));
+            MovieViewModel viewModel = createViewModel(movie);
+            viewModels.add(viewModel);
         }
 
+        // Display movies in view
         view.displayMovies(viewModels);
 
+        // Update shared state so sorting uses the current list
+        MovieList movieList = new MovieList(
+                outputData.getListName(),
+                outputData.getMovies()
+        );
+        movieListState.set(movieList);
+
+        // Show notification if fewer than 100 movies
         if (outputData.getTotalCount() < 100) {
             String message = String.format(
                     "Showing %d of 100 movies due to limited results.",
@@ -42,6 +68,7 @@ public class MoviePresenter implements FetchMoviesOutputBoundary, SortMoviesOutp
             view.showNotification(message);
         }
 
+        // Show notification if movies were skipped
         if (outputData.getSkippedCount() > 0) {
             String message = String.format(
                     "%d items were skipped due to missing data.",
@@ -63,51 +90,55 @@ public class MoviePresenter implements FetchMoviesOutputBoundary, SortMoviesOutp
         view.showLoading(isLoading);
     }
 
-    @Override
-    public void presentSortedMovies(SortMoviesOutputData outputData) {
+    /**
+     * Present sorted movies (legacy path).
+     * Currently unused now that SortMoviesInteractor + SortPresenter exist,
+     * but kept for compatibility in case other code still calls it.
+     */
+    public void presentSortedMovies(MovieList movieList) {
         if (view == null) return;
 
         List<MovieViewModel> viewModels = new ArrayList<>();
-        for (Movie movie : outputData.getSortedMovies()) {
-            viewModels.add(createViewModel(movie));
+
+        for (Movie movie : movieList.getMovies()) {
+            MovieViewModel viewModel = createViewModel(movie);
+            viewModels.add(viewModel);
         }
 
         view.displayMovies(viewModels);
-
-        String sortDescription = mapSortTypeToDescription(outputData.getSortType());
-        view.updateSortIndicator(sortDescription);
+        view.updateSortIndicator(movieList.getCurrentSort());
     }
 
-    private String mapSortTypeToDescription(SortType sortType) {
-        return switch (sortType) {
-            case ALPHABETICAL_AZ -> "Alphabetical (A→Z)";
-            case ALPHABETICAL_ZA -> "Alphabetical (Z→A)";
-            case RATING_DESC -> "Average Rating (High→Low)";
-            case RATING_ASC -> "Average Rating (Low→High)";
-            case POPULARITY_DESC -> "Number of Ratings (High→Low)";
-            case POPULARITY_ASC -> "Number of Ratings (Low→High)";
-            case NONE -> "Default";
-        };
-    }
-
+    /**
+     * Convert Movie entity to MovieViewModel
+     * Formats all data as strings ready for display
+     */
     private MovieViewModel createViewModel(Movie movie) {
+        // Format title (truncate if too long for display)
         String displayTitle = movie.getTitle();
         if (displayTitle != null && displayTitle.length() > 30) {
             displayTitle = displayTitle.substring(0, 27) + "...";
         }
 
+        // Format release date (handle missing dates)
         String displayDate = (movie.getReleaseDate() != null && !movie.getReleaseDate().isEmpty())
                 ? "Released: " + movie.getReleaseDate()
                 : "Released: —";
 
+        // Format rating (handle missing ratings)
         String displayRating = movie.getVoteAverage() > 0
                 ? String.format("%.1f", movie.getVoteAverage())
                 : "—";
 
-        String displayVoteCount = String.format("%.0f votes", movie.getPopularity());
+        // Format vote count (treat 0 or missing as "—")
+        String displayVoteCount = movie.getVoteCount() > 0
+                ? String.format("%d votes", movie.getVoteCount())
+                : "—";
 
+        // Poster URL (pass through, let view handle missing posters)
         String posterUrl = movie.getPosterUrl();
 
+        // Format overview (truncate if too long)
         String displayOverview = movie.getOverview();
         if (displayOverview != null && displayOverview.length() > 200) {
             displayOverview = displayOverview.substring(0, 197) + "...";

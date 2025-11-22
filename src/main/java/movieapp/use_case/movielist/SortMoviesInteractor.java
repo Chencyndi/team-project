@@ -58,6 +58,7 @@ public class SortMoviesInteractor implements SortMoviesInputBoundary {
             case POPULARITY_ASC ->
                     Comparator.comparingDouble(Movie::getPopularity)
                             .thenComparing(Movie::getTitle, String.CASE_INSENSITIVE_ORDER);
+                default -> throw new IllegalArgumentException("Unexpected value: " + sortType);
         };
     }
 }

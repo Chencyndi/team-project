@@ -76,4 +76,9 @@ public class MovieList {
     public int hashCode() {
         return Objects.hash(name, movies);
     }
+
+    public String getCurrentSort() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCurrentSort'");
+    }
 }
