@@ -1,13 +1,11 @@
 package movieapp.interface_adapter.movielist;
 
 /**
- * View Model for displaying a movie
- * Interface Adapters Layer
- *
- * Contains UI-ready formatted data (all strings)
- * No business logic, just data for display
+ * View Model for displaying a movie.
+ * Interface Adapters layer.
  */
 public class MovieViewModel {
+
     private final String displayTitle;
     private final String displayReleaseDate;
     private final String displayRating;
@@ -15,10 +13,6 @@ public class MovieViewModel {
     private final String posterUrl;
     private final String displayOverview;
 
-    /**
-     * Create a view model with formatted display data
-     * All fields are ready for direct display in UI
-     */
     public MovieViewModel(String displayTitle,
                           String displayReleaseDate,
                           String displayRating,
@@ -32,8 +26,6 @@ public class MovieViewModel {
         this.posterUrl = posterUrl;
         this.displayOverview = displayOverview;
     }
-
-    // Getters only - view models are immutable
 
     public String getDisplayTitle() {
         return displayTitle;

@@ -1,69 +1,56 @@
 package movieapp.interface_adapter.movielist;
 
-
 import movieapp.entity.MovieList;
+import movieapp.use_case.movielist.SortMoviesInputBoundary;
+import movieapp.use_case.movielist.SortMoviesInputData;
+import movieapp.use_case.movielist.SortType;
 
 /**
- * Controller for Use Case 5 - Sorting Movies
- * Interface Adapters Layer
- * Handles user sorting actions
+ * Controller for sorting movies.
+ * Interface Adapters layer.
  */
-
 public class SortController {
-    private MovieList movieList;
-    private MoviePresenter presenter;
 
-    /**
-     * Set the movie list to be sorted
-     */
+    private final SortMoviesInputBoundary sortMoviesInteractor;
+    private MovieList currentMovieList;
 
-    public void setMovieList(MovieList movieList) {
-        this.movieList = movieList;
+    public SortController(SortMoviesInputBoundary sortMoviesInteractor) {
+        this.sortMoviesInteractor = sortMoviesInteractor;
     }
 
-    /**
-     * Set the presenter for displaying results
-     */
-
-    public void setPresenter(MoviePresenter presenter) {
-        this.presenter = presenter;
+    // Called when the current movie list is updated (e.g., after fetching)
+    public void setCurrentMovieList(MovieList movieList) {
+        this.currentMovieList = movieList;
     }
 
-    /**
-     * Handle user sort selection
-     * Called when user selects a sort option from dropdown
-     *
-     * @param sortOption the sort option selected (e.g., "Alphabetical A→Z")
-     */
 
+    // Called when the user selects a sort option from the UI
     public void onSortSelected(String sortOption) {
-        if (movieList == null || presenter == null) {
+        if (currentMovieList == null) {
             return;
         }
 
-        // Convert UI sort option to entity sort type
-        MovieList.SortType sortType = mapSortOption(sortOption);
+        SortType sortType = mapSortOption(sortOption);
 
-        // Execute sort on entity
-        movieList.sort(sortType);
+        SortMoviesInputData inputData = new SortMoviesInputData(
+                currentMovieList.getName(),
+                sortType,
+                currentMovieList.getMovies()
+        );
 
-        // Present updated list
-        presenter.presentSortedMovies(movieList);
+        sortMoviesInteractor.sortMovies(inputData);
     }
 
-    /**
-     * Map UI sort option to entity sort type
-     */
-
-    private MovieList.SortType mapSortOption(String sortOption) {
+    // Called when the user selects to change a sort option from the UI
+    private SortType mapSortOption(String sortOption) {
         return switch (sortOption) {
-            case "Alphabetical (A→Z)" -> MovieList.SortType.ALPHABETICAL_AZ;
-            case "Alphabetical (Z→A)" -> MovieList.SortType.ALPHABETICAL_ZA;
-            case "Average Rating (High→Low)" -> MovieList.SortType.RATING_DESC;
-            case "Average Rating (Low→High)" -> MovieList.SortType.RATING_ASC;
-            case "Number of Ratings (High→Low)" -> MovieList.SortType.VOTE_COUNT_DESC;
-            case "Number of Ratings (Low→High)" -> MovieList.SortType.VOTE_COUNT_ASC;
-            default -> MovieList.SortType.NONE;
+            case "Alphabetical (A→Z)" -> SortType.ALPHABETICAL_AZ;
+            case "Alphabetical (Z→A)" -> SortType.ALPHABETICAL_ZA;
+            case "Average Rating (High→Low)" -> SortType.RATING_DESC;
+            case "Average Rating (Low→High)" -> SortType.RATING_ASC;
+            case "Number of Ratings (High→Low)" -> SortType.POPULARITY_DESC;
+            case "Number of Ratings (Low→High)" -> SortType.POPULARITY_ASC;
+            default -> SortType.NONE;
         };
     }
 }

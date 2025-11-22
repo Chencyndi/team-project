@@ -1,19 +1,13 @@
 package movieapp.use_case.movielist;
 
 /**
- * Defines the contract for fetching movies
- * Application Business Rules Layer
+ * Input Boundary for fetching movies.
+ * Application Business Rules layer.
  */
 public interface FetchMoviesInputBoundary {
-    /**
-     * Fetch the 100 most popular movies
-     * @param inputData contains request parameters
-     */
-    void fetchPopularMovies(FetchMoviesInputData inputData);
 
     /**
-     * Fetch the 100 most recently released movies
-     * @param inputData contains request parameters
+     * Fetch movies according to the requested category and count.
      */
-    void fetchRecentMovies(FetchMoviesInputData inputData);
+    void fetchMovies(FetchMoviesInputData inputData);
 }

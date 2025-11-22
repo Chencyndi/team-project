@@ -1,103 +1,79 @@
 package movieapp.entity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Domain entity representing a named list of movies.
+ */
 public class MovieList {
-    private String name;
-    private List<Movie> movieList;
-    private String currentSort;
-    private boolean ascending;
 
-    public enum SortType {
-        ALPHABETICAL_AZ,
-        ALPHABETICAL_ZA,
-        RATING_DESC,
-        RATING_ASC,
-        VOTE_COUNT_DESC,
-        VOTE_COUNT_ASC,
-        NONE
-    }
+    private final String name;
+    private final List<Movie> movies;
 
-    public MovieList(String name, List<Movie> movieList) {
+    public MovieList(String name, List<Movie> movies) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Movie list name cannot be null or blank");
+        }
+        if (movies == null) {
+            throw new IllegalArgumentException("Movies list cannot be null");
+        }
         this.name = name;
-        this.movieList = new ArrayList<>(movieList);
-        this.currentSort = "NONE";
-        this.ascending = true;
+        this.movies = new ArrayList<>(movies);
     }
 
-    // Getters
-
-    public List<Movie> getMovieList() { return new ArrayList<>(movieList); }
-    public String getCurrentSort() { return currentSort; }
-    public String getName() { return name; }
-    public int getListSize() { return movieList.size(); }
-
-    /**
-     * Sort the movie list by the specified type
-     */
-    public void sort(SortType sortType) {
-        Comparator<Movie> comparator = null;
-
-        switch (sortType) {
-            case ALPHABETICAL_AZ:
-                comparator = Comparator.comparing(Movie::getTitle)
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Alphabetical (A→Z)";
-                ascending = true;
-                break;
-
-            case ALPHABETICAL_ZA:
-                comparator = Comparator.comparing(Movie::getTitle).reversed()
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Alphabetical (Z→A)";
-                ascending = false;
-                break;
-
-            case RATING_DESC:
-                comparator = Comparator.comparingDouble(Movie::getVoteAverage).reversed()
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Average Rating (High→Low)";
-                ascending = false;
-                break;
-
-            case RATING_ASC:
-                comparator = Comparator.comparingDouble(Movie::getVoteAverage)
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Average Rating (Low→High)";
-                ascending = true;
-                break;
-
-            case VOTE_COUNT_DESC:
-                comparator = Comparator.comparingInt(Movie::getVoteCount).reversed()
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Number of Ratings (High→Low)";
-                ascending = false;
-                break;
-
-            case VOTE_COUNT_ASC:
-                comparator = Comparator.comparingInt(Movie::getVoteCount)
-                        .thenComparing(Movie::getTitle); // Tiebreaker
-                currentSort = "Number of Ratings (Low→High)";
-                ascending = true;
-                break;
-
-            case NONE:
-            default:
-                currentSort = "Default";
-                return;
-        }
-
-        if (comparator != null) {
-            movieList.sort(comparator);
-        }
+    public String getName() {
+        return name;
     }
 
-    /**
-     * Check if movielist is empty
-     */
+    public List<Movie> getMovies() {
+        return Collections.unmodifiableList(movies);
+    }
+
+    public int size() {
+        return movies.size();
+    }
+
     public boolean isEmpty() {
-        return movieList.isEmpty();
+        return movies.isEmpty();
+    }
+
+    /**
+     * Determines whether this MovieList is equal to another object.
+     * <p>
+     * Two MovieList instances are considered equal if and only if:
+     * <ul>
+     *   <li>they have the same name, and</li>
+     *   <li>their underlying movie collections contain the same elements
+     *       in the same order.</li>
+     * </ul>
+     * This method follows the general contract of {@link Object#equals(Object)}.
+     *
+     * @param o the object to compare with this MovieList
+     * @return true if the objects are logically equal; false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MovieList that)) return false;
+        return name.equals(that.name) && movies.equals(that.movies);
+    }
+
+    /**
+     * Computes the hash code for this MovieList.
+     * <p>
+     * The hash code is derived from the list’s name and its movie collection,
+     * ensuring that two MovieList instances which are equal according to
+     * {@link #equals(Object)} produce the same hash value. This maintains
+     * the required contract between equals and hashCode, allowing instances
+     * to be used safely in hash-based collections.
+     *
+     * @return a hash code value for this MovieList
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, movies);
     }
 }
