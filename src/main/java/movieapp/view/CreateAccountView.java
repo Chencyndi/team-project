@@ -3,6 +3,7 @@ package movieapp.view;
 
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.use_case.account.CreateAccountOutputData;
+import movieapp.interface_adapter.account.CreateAccountViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +22,7 @@ public class CreateAccountView extends JFrame {
     }
     
     private void initializeUI() {
-        setTitle("Create Account");
+        setTitle(CreateAccountViewModel.TITLE_LABEL);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(350, 250);
         setLocationRelativeTo(null);
@@ -30,22 +31,22 @@ public class CreateAccountView extends JFrame {
         JPanel mainPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        mainPanel.add(new JLabel("Username:"));
+        mainPanel.add(new JLabel(CreateAccountViewModel.USERNAME_LABEL));
         usernameField = new JTextField();
         mainPanel.add(usernameField);
         
-        mainPanel.add(new JLabel("Password:"));
+        mainPanel.add(new JLabel(CreateAccountViewModel.PASSWORD_LABEL));
         passwordField = new JPasswordField();
         mainPanel.add(passwordField);
         
-        mainPanel.add(new JLabel("Confirm Password:"));
+        mainPanel.add(new JLabel(CreateAccountViewModel.REPEAT_PASSWORD_LABEL));
         confirmPasswordField = new JPasswordField();
         mainPanel.add(confirmPasswordField);
         
-        JButton createButton = new JButton("Create");
+        JButton createButton = new JButton(CreateAccountViewModel.SIGNUP_BUTTON_LABEL);
         createButton.addActionListener(e -> handleCreateAccount());
         
-        JButton backButton = new JButton("Back");
+        JButton backButton = new JButton(CreateAccountViewModel.CANCEL_BUTTON_LABEL);
         backButton.addActionListener(e -> goBackToLogin());
         
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));

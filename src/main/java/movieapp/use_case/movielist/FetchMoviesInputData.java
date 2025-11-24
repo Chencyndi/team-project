@@ -1,29 +1,30 @@
 package movieapp.use_case.movielist;
 
 /**
- * Input Data (DTO) for Use Case 5
- * Contains request parameters for fetching movies
- * Application Business Rules Layer
+ * Input Data for fetching movies.
+ * Application Business Rules layer.
  */
 public class FetchMoviesInputData {
-    private final int targetCount;
-    private final String movieType; // "popular" or "recent"
 
-    /**
-     * Create input data for movie fetching
-     * @param targetCount number of movies to fetch (typically 100)
-     * @param movieType type of movies ("popular" or "recent")
-     */
-    public FetchMoviesInputData(int targetCount, String movieType) {
+    private final int targetCount;
+    private final MovieCategory category;
+
+    public FetchMoviesInputData(int targetCount, MovieCategory category) {
+        if (targetCount <= 0) {
+            throw new IllegalArgumentException("targetCount must be positive");
+        }
+        if (category == null) {
+            throw new IllegalArgumentException("category cannot be null");
+        }
         this.targetCount = targetCount;
-        this.movieType = movieType;
+        this.category = category;
     }
 
     public int getTargetCount() {
         return targetCount;
     }
 
-    public String getMovieType() {
-        return movieType;
+    public MovieCategory getCategory() {
+        return category;
     }
 }

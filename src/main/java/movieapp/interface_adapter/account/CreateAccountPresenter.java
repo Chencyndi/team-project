@@ -23,4 +23,5 @@ public class CreateAccountPresenter implements CreateAccountOutputBoundary {
     public CreateAccountOutputData presentValidationError(String message) {
         return new CreateAccountOutputData(false, message, null);
     }
+
 }

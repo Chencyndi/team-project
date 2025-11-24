@@ -16,12 +16,22 @@ import java.util.List;
  * Converts entities and output data to view models
  * Formats data for UI display
  */
-
 public class MoviePresenter implements FetchMoviesOutputBoundary {
+
     private MovieListView view;
+    private final MovieListState movieListState;
 
     /**
-     * Set the view that will display the movies
+     * Create a MoviePresenter with shared MovieListState.
+     *
+     * @param movieListState shared state for the current movie list
+     */
+    public MoviePresenter(MovieListState movieListState) {
+        this.movieListState = movieListState;
+    }
+
+    /**
+     * Set the view that will display the movies.
      */
     public void setView(MovieListView view) {
         this.view = view;
@@ -42,17 +52,28 @@ public class MoviePresenter implements FetchMoviesOutputBoundary {
         // Display movies in view
         view.displayMovies(viewModels);
 
+        // Update shared state so sorting uses the current list
+        MovieList movieList = new MovieList(
+                outputData.getListName(),
+                outputData.getMovies()
+        );
+        movieListState.set(movieList);
+
         // Show notification if fewer than 100 movies
         if (outputData.getTotalCount() < 100) {
-            String message = String.format("Showing %d of 100 movies due to limited results.",
-                    outputData.getTotalCount());
+            String message = String.format(
+                    "Showing %d of 100 movies due to limited results.",
+                    outputData.getTotalCount()
+            );
             view.showNotification(message);
         }
 
         // Show notification if movies were skipped
         if (outputData.getSkippedCount() > 0) {
-            String message = String.format("%d items were skipped due to missing data.",
-                    outputData.getSkippedCount());
+            String message = String.format(
+                    "%d items were skipped due to missing data.",
+                    outputData.getSkippedCount()
+            );
             view.showNotification(message);
         }
     }
@@ -70,24 +91,21 @@ public class MoviePresenter implements FetchMoviesOutputBoundary {
     }
 
     /**
-     * Present sorted movies
-     * Called by SortController after sorting
+     * Present sorted movies (legacy path).
+     * Currently unused now that SortMoviesInteractor + SortPresenter exist,
+     * but kept for compatibility in case other code still calls it.
      */
     public void presentSortedMovies(MovieList movieList) {
         if (view == null) return;
 
-        // Convert entities to view models
         List<MovieViewModel> viewModels = new ArrayList<>();
 
-        for (Movie movie : movieList.getMovieList()) {
+        for (Movie movie : movieList.getMovies()) {
             MovieViewModel viewModel = createViewModel(movie);
             viewModels.add(viewModel);
         }
 
-        // Update view with sorted movies
         view.displayMovies(viewModels);
-
-        // Update sort indicator
         view.updateSortIndicator(movieList.getCurrentSort());
     }
 
@@ -98,7 +116,7 @@ public class MoviePresenter implements FetchMoviesOutputBoundary {
     private MovieViewModel createViewModel(Movie movie) {
         // Format title (truncate if too long for display)
         String displayTitle = movie.getTitle();
-        if (displayTitle.length() > 30) {
+        if (displayTitle != null && displayTitle.length() > 30) {
             displayTitle = displayTitle.substring(0, 27) + "...";
         }
 
@@ -112,8 +130,10 @@ public class MoviePresenter implements FetchMoviesOutputBoundary {
                 ? String.format("%.1f", movie.getVoteAverage())
                 : "—";
 
-        // Format vote count
-        String displayVoteCount = String.format("%d votes", movie.getVoteCount());
+        // Format vote count (treat 0 or missing as "—")
+        String displayVoteCount = movie.getVoteCount() > 0
+                ? String.format("%d votes", movie.getVoteCount())
+                : "—";
 
         // Poster URL (pass through, let view handle missing posters)
         String posterUrl = movie.getPosterUrl();
