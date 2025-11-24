@@ -23,7 +23,7 @@ public abstract class BasePostCommentView extends JDialog {
     protected JTextArea textArea;
     protected JLabel errorLabel;
 
-    protected BasePostCommentView(BasePostCommentView parent,
+    protected BasePostCommentView(JFrame parent,
                                    PostCommentController postCommentController,
                                    PostCommentViewModel viewModel,
                                    Integer movieID,
