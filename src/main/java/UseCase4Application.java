@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 public class UseCase4Application {
     // Simple current username storage for demo purposes
-    // In a real application, this would be managed by a session manager
     private static volatile String currentUsername = null;
     
     // Simple username setter for login callbacks
