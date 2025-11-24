@@ -23,13 +23,13 @@ public abstract class BasePostCommentView extends JDialog {
     protected JTextArea textArea;
     protected JLabel errorLabel;
 
-    protected BasePostCommentView(BasePostCommentView parent,
-                                   PostCommentController postCommentController,
-                                   PostCommentViewModel viewModel,
-                                   Integer movieID,
-                                   Supplier<String> currentUsernameSupplier,
-                                   Runnable onPostedCallback,
-                                   LoginController loginController) {
+    protected BasePostCommentView(JFrame parent,
+                                  PostCommentController postCommentController,
+                                  PostCommentViewModel viewModel,
+                                  Integer movieID,
+                                  Supplier<String> currentUsernameSupplier,
+                                  Runnable onPostedCallback,
+                                  LoginController loginController) {
         super(parent, "", true);
         this.postCommentController = postCommentController;
         this.viewModel = viewModel;
