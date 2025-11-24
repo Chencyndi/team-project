@@ -82,7 +82,7 @@ public class UseCase4Application {
             try {
                 // Fetch movie information from TMDB API
                 TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
-                Movie movie = movieAPI.fetchMovieByID(movieID);
+                Movie movie = movieAPI.findById(movieID);
 
                 //just example
                 if (movie == null) {
