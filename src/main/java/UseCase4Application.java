@@ -1,11 +1,10 @@
 // UseCase4Application.java
 import movieapp.data_access.CommentDataAccessObject;
-import movieapp.data_access.InMemoryAccountRepository;
 import movieapp.data_access.TMDBMovieAPIAccess;
+import movieapp.data_access.UserDataAccessObject;
 import movieapp.entity.Movie;
 import movieapp.entity.User;
 import movieapp.entity.Watchlist;
-import movieapp.interface_adapter.AccountRepository;
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.interface_adapter.account.CreateAccountPresenter;
 import movieapp.interface_adapter.comment.PostCommentController;
@@ -39,15 +38,15 @@ public class UseCase4Application {
     }
     
     public static void main(String[] args) {
-        InMemoryAccountRepository accountRepo = new InMemoryAccountRepository();
+        UserDataAccessInterface accountRepo = new UserDataAccessObject();
 
         // Create test users
         User testUser1 = new User("testuser", "password123");
         User testUser2 = new User("max", "password123");
         User testUser3 = new User("Luke", "password123");
-        accountRepo.save(testUser1);
-        accountRepo.save(testUser2);
-        accountRepo.save(testUser3);
+        accountRepo.addUser(testUser1);
+        accountRepo.addUser(testUser2);
+        accountRepo.addUser(testUser3);
 
         UserDataAccessInterface userDataAccess = new UserDataAccessAdapter(accountRepo);
         CommentDataAccessObject commentDataAccess = new CommentDataAccessObject();
@@ -82,7 +81,7 @@ public class UseCase4Application {
             try {
                 // Fetch movie information from TMDB API
                 TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
-                Movie movie = movieAPI.fetchMovieByID(movieID);
+                Movie movie = movieAPI.findById(movieID);
 
                 //just example
                 if (movie == null) {
@@ -123,9 +122,9 @@ public class UseCase4Application {
 
     // Adapter class to convert AccountRepository to UserDataAccessInterface
     private static class UserDataAccessAdapter implements UserDataAccessInterface {
-        private final movieapp.interface_adapter.AccountRepository accountRepository;
+        private final UserDataAccessInterface accountRepository;
 
-        public UserDataAccessAdapter(movieapp.interface_adapter.AccountRepository accountRepository) {
+        public UserDataAccessAdapter(UserDataAccessInterface accountRepository) {
             this.accountRepository = accountRepository;
         }
 
@@ -136,12 +135,12 @@ public class UseCase4Application {
 
         @Override
         public void addUser(User user) {
-            accountRepository.save(user);
+            accountRepository.addUser(user);
         }
 
         @Override
         public User findByUsername(String username) {
-            return accountRepository.findByUsername(username).orElse(null);
+            return accountRepository.findByUsername(username);
         }
 
         @Override

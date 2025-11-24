@@ -4,6 +4,7 @@ import movieapp.entity.Movie;
 import movieapp.entity.User;
 import movieapp.entity.Watchlist;
 import movieapp.use_case.common.UserDataAccessInterface;
+import movieapp.use_case.watchlist.WatchlistDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -81,7 +82,7 @@ public class UserDataAccessObject implements UserDataAccessInterface {
                 for (int j = 0; j < watchlistID.length(); j++) {
                     int id = watchlistID.getInt(j);
                     try {
-                        Movie movie = tmdbMovieAPIAccess.fetchMovieByID(id);
+                        Movie movie = tmdbMovieAPIAccess.findById(id);
                         if (movie != null) {
                             movies.add(movie);
                         }

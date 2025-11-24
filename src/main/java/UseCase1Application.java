@@ -1,11 +1,11 @@
 // Application.java
 
-import movieapp.data_access.DBUserDataAccessObject;
-import movieapp.interface_adapter.AccountRepository;
+import movieapp.data_access.UserDataAccessObject;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.interface_adapter.account.CreateAccountPresenter;
+import movieapp.use_case.common.UserDataAccessInterface;
 import movieapp.use_case.login.LoginInputBoundary;
 import movieapp.use_case.login.LoginInteractor;
 import movieapp.use_case.account.CreateAccountInputBoundary;
@@ -18,8 +18,7 @@ import javax.swing.*;
 public class UseCase1Application {
     public static void main(String[] args) {
         // Dependency Injection Setup
-        String baseUrl = "http://vm003.teach.cs.toronto.edu:20112";
-        AccountRepository accountRepository = new DBUserDataAccessObject(baseUrl);
+        UserDataAccessInterface accountRepository = new UserDataAccessObject();
 
         CreateAccountPresenter createAccountPresenter = new CreateAccountPresenter();
         LoginPresenter loginPresenter = new LoginPresenter();
