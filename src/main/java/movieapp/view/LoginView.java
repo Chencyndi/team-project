@@ -3,7 +3,6 @@ package movieapp.view;
 
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.account.CreateAccountController;
-import movieapp.use_case.login.LoginOutputData;
 import movieapp.interface_adapter.login.LoginViewModel;
 
 import javax.swing.*;
@@ -31,7 +30,7 @@ public class LoginView extends JFrame {
         JPanel mainPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        mainPanel.add(new JLabel(LoginViewModel.USERNAME));
+        mainPanel.add(new JLabel(LoginViewModel.USERNAME_LABEL));
         usernameField = new JTextField();
         mainPanel.add(usernameField);
         
@@ -57,13 +56,13 @@ public class LoginView extends JFrame {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
         
-        LoginOutputData result = loginController.login(username, password);
+        loginController.login(username, password);
         
-        if (result.isSuccess()) {
-            openAccountView(result.getUsername());
+        if (LoginViewModel.SUCCESS == true) {
+            openAccountView(LoginViewModel.USERNAME);
             dispose();
         } else {
-            showUserNotExistView(result.getMessage());
+            showUserNotExistView(LoginViewModel.MESSAGE);
         }
     }
     

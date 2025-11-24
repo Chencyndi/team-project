@@ -2,8 +2,8 @@
 package movieapp.use_case.login;
 
 public interface LoginOutputBoundary {
-    LoginOutputData presentSuccess(String message, String username);
-    LoginOutputData presentUserNotFound(String message);
-    LoginOutputData presentInvalidPassword(String message);
-    LoginOutputData presentValidationError(String message);
+    void presentSuccess(String message, String username);
+    void presentUserNotFound(String message);
+    void presentInvalidPassword(String message);
+    void presentValidationError(String message);
 }

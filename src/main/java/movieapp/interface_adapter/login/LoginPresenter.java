@@ -6,22 +6,34 @@ import movieapp.use_case.login.LoginOutputData;
 
 public class LoginPresenter implements LoginOutputBoundary {
     @Override
-    public LoginOutputData presentSuccess(String message, String username) {
-        return new LoginOutputData(true, message, username);
+    public void presentSuccess(String message, String username) {
+       final LoginOutputData outputdata = new LoginOutputData(true, message, username);
+       LoginViewModel.SUCCESS = outputdata.isSuccess();
+       LoginViewModel.MESSAGE = outputdata.getMessage();
+       LoginViewModel.USERNAME = outputdata.getUsername();
     }
     
     @Override
-    public LoginOutputData presentUserNotFound(String message) {
-        return new LoginOutputData(false, message, null);
+    public void presentUserNotFound(String message) {
+        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
+        LoginViewModel.SUCCESS = outputdata.isSuccess();
+        LoginViewModel.MESSAGE = outputdata.getMessage();
+        LoginViewModel.USERNAME = outputdata.getUsername();
     }
     
     @Override
-    public LoginOutputData presentInvalidPassword(String message) {
-        return new LoginOutputData(false, message, null);
+    public void presentInvalidPassword(String message) {
+        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
+        LoginViewModel.SUCCESS = outputdata.isSuccess();
+        LoginViewModel.MESSAGE = outputdata.getMessage();
+        LoginViewModel.USERNAME = outputdata.getUsername();
     }
     
     @Override
-    public LoginOutputData presentValidationError(String message) {
-        return new LoginOutputData(false, message, null);
+    public void presentValidationError(String message) {
+        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
+        LoginViewModel.SUCCESS = outputdata.isSuccess();
+        LoginViewModel.MESSAGE = outputdata.getMessage();
+        LoginViewModel.USERNAME = outputdata.getUsername();
     }
 }

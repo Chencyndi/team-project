@@ -15,25 +15,25 @@ public class LoginInteractor implements LoginInputBoundary {
     }
     
     @Override
-    public LoginOutputData execute(LoginInputData inputData) {
+    public void execute(LoginInputData inputData) {
         try {
             // Find user by username
             User user = accountRepository.findByUsername(inputData.getUsername())
                     .orElse(null);
             
             if (user == null) {
-                return outputBoundary.presentUserNotFound("User does not exist");
+                outputBoundary.presentUserNotFound("User does not exist");
             }
             
             // Validate password
             if (!user.validateCredentials(inputData.getPassword())) {
-                return outputBoundary.presentInvalidPassword("Invalid password");
+                outputBoundary.presentInvalidPassword("Invalid password");
             }
             
-            return outputBoundary.presentSuccess("Login successful", user.getUsername());
+            outputBoundary.presentSuccess("Login successful", user.getUsername());
             
         } catch (IllegalArgumentException e) {
-            return outputBoundary.presentValidationError(e.getMessage());
+            outputBoundary.presentValidationError(e.getMessage());
         }
     }
 }
