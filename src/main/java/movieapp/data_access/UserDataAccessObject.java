@@ -81,7 +81,7 @@ public class UserDataAccessObject implements UserDataAccessInterface {
                 for (int j = 0; j < watchlistID.length(); j++) {
                     int id = watchlistID.getInt(j);
                     try {
-                        Movie movie = tmdbMovieAPIAccess.fetchMovieByID(id);
+                        Movie movie = tmdbMovieAPIAccess.fetchRecentMovies(id).get(j);
                         if (movie != null) {
                             movies.add(movie);
                         }
