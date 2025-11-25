@@ -11,7 +11,6 @@ public class UseCase3Application {
 
     public static void main(String[] args) {
         UserDataAccessInterface userDataAccess = new UserDataAccessObject();
-        setupTestUser(userDataAccess); // Helper to ensure user exists
 
         RatingViewModel ratingViewModel = new RatingViewModel();
         RatingPresenter ratingPresenter = new RatingPresenter(ratingViewModel);
@@ -34,12 +33,5 @@ public class UseCase3Application {
             appFrame.add(ratingView);
             appFrame.setVisible(true);
         });
-    }
-
-    private static void setupTestUser(UserDataAccessInterface dao) {
-        if (!dao.existsByUsername("testuser")) {
-            User testUser = new User("testuser", "password123");
-            dao.addUser(testUser);
-        }
     }
 }
