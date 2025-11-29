@@ -14,7 +14,10 @@
     {
         "password": "abcd",
         "ratings": [],
-        "watchlist": [],
+        "watchlist": [
+            1033462,
+            967941
+        ],
         "username": "max"
     },
     {
