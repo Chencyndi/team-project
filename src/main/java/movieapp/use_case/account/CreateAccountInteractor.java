@@ -2,13 +2,13 @@
 package movieapp.use_case.account;
 
 import movieapp.entity.User;
-import movieapp.interface_adapter.login.AccountRepository;
+import movieapp.use_case.common.UserDataAccessInterface;
 
 public class CreateAccountInteractor implements CreateAccountInputBoundary {
-    private final AccountRepository accountRepository;
+    private final UserDataAccessInterface accountRepository;
     private final CreateAccountOutputBoundary outputBoundary;
     
-    public CreateAccountInteractor(AccountRepository accountRepository, 
+    public CreateAccountInteractor(UserDataAccessInterface accountRepository,
                                   CreateAccountOutputBoundary outputBoundary) {
         this.accountRepository = accountRepository;
         this.outputBoundary = outputBoundary;
@@ -29,7 +29,7 @@ public class CreateAccountInteractor implements CreateAccountInputBoundary {
             }
             // Create and save user
             User user = new User(inputData.getUsername(), inputData.getPassword());
-            accountRepository.save(user);
+            accountRepository.addUser(user);
             CreateAccountOutputData outputData = new CreateAccountOutputData(
                     true, "Success", inputData.getUsername());
             outputBoundary.presentSuccess(outputData);

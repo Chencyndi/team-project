@@ -1,6 +1,6 @@
 package movieapp.app;// Application.java
 
-import movieapp.data_access.InMemoryWatchlistDAO;
+import movieapp.data_access.DatabaseWatchlistDAO;
 import movieapp.interface_adapter.watchlist.*;
 import movieapp.use_case.watchlist.*;
 import movieapp.view.WatchlistView;
@@ -12,7 +12,7 @@ public class WatchlistUseCaseFactory {
 
     public static WatchlistView create() {
         // Use the simple in-memory version
-        final InMemoryWatchlistDAO dataAccess = new InMemoryWatchlistDAO();
+        final DatabaseWatchlistDAO dataAccess = new DatabaseWatchlistDAO();
 
         final WatchlistViewModel viewModel = new WatchlistViewModel();
         final WatchlistPresenter presenter = new WatchlistPresenter(viewModel);
@@ -38,7 +38,7 @@ public class WatchlistUseCaseFactory {
      * @return the configured WatchlistController
      */
     public static WatchlistController createController(
-            InMemoryWatchlistDAO dataAccess,
+            DatabaseWatchlistDAO dataAccess,
             WatchlistViewModel viewModel) {
 
         final WatchlistPresenter presenter = new WatchlistPresenter(viewModel);

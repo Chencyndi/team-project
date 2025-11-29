@@ -1,4 +1,4 @@
-import movieapp.data_access.InMemoryWatchlistDAO;
+import movieapp.data_access.DatabaseWatchlistDAO;
 import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.watchlist.*;
@@ -14,11 +14,11 @@ import java.util.List;
  */
 public class UseCase2Application {
 
-    private static String currentUsername = "demo_user";
+    private static String currentUsername = "max";
 
     public static void main(String[] args) {
         // Setup data access
-        InMemoryWatchlistDAO watchlistDAO = new InMemoryWatchlistDAO();
+        DatabaseWatchlistDAO watchlistDAO = new DatabaseWatchlistDAO();
         watchlistDAO.setCurrentUsername(currentUsername);
         TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
 
@@ -86,7 +86,7 @@ public class UseCase2Application {
 
     private static JPanel createBrowsePanel(List<Movie> movies,
                                             WatchlistController controller,
-                                            InMemoryWatchlistDAO dao) {
+                                            DatabaseWatchlistDAO dao) {
         JPanel panel = new JPanel(new BorderLayout());
 
         // Header
@@ -116,7 +116,7 @@ public class UseCase2Application {
     private static void refreshBrowsePanel(JPanel browsePanel,
                                            List<Movie> movies,
                                            WatchlistController controller,
-                                           InMemoryWatchlistDAO dao) {
+                                           DatabaseWatchlistDAO dao) {
         // Get the scroll pane (component 1 in BorderLayout.CENTER)
         Component scrollComp = browsePanel.getComponent(1);
         if (scrollComp instanceof JScrollPane) {
@@ -142,7 +142,7 @@ public class UseCase2Application {
 
     private static JPanel createSimpleMovieCard(Movie movie,
                                                 WatchlistController controller,
-                                                InMemoryWatchlistDAO dao) {
+                                                DatabaseWatchlistDAO dao) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),

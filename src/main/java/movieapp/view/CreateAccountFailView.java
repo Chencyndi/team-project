@@ -1,19 +1,19 @@
-// UserNotExistView.java
+// PasswordNotSameView.java
 package movieapp.view;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class UserNotExistView extends JFrame {
-    private final LoginView loginView;
+public class CreateAccountFailView extends JFrame {
+    private final CreateAccountView createAccountView;
     
-    public UserNotExistView(LoginView loginView, String errorMessage) {
-        this.loginView = loginView;
+    public CreateAccountFailView(CreateAccountView createAccountView, String errorMessage) {
+        this.createAccountView = createAccountView;
         initializeUI(errorMessage);
     }
     
     private void initializeUI(String errorMessage) {
-        setTitle("Login Error");
+        setTitle("Password Error");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(300, 150);
         setLocationRelativeTo(null);
@@ -26,14 +26,14 @@ public class UserNotExistView extends JFrame {
         mainPanel.add(messageLabel, BorderLayout.CENTER);
         
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> goBackToLogin());
+        backButton.addActionListener(e -> goBackToCreateAccount());
         
         add(mainPanel, BorderLayout.CENTER);
         add(backButton, BorderLayout.SOUTH);
     }
     
-    private void goBackToLogin() {
-        loginView.setVisible(true);
+    private void goBackToCreateAccount() {
+        createAccountView.setVisible(true);
         dispose();
     }
 }

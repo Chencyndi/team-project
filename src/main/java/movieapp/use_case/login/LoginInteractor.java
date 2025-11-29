@@ -3,13 +3,13 @@ package movieapp.use_case.login;
 
 
 import movieapp.entity.User;
-import movieapp.interface_adapter.login.AccountRepository;
+import movieapp.use_case.common.UserDataAccessInterface;
 
 public class LoginInteractor implements LoginInputBoundary {
-    private final AccountRepository accountRepository;
+    private final UserDataAccessInterface accountRepository;
     private final LoginOutputBoundary outputBoundary;
     
-    public LoginInteractor(AccountRepository accountRepository, LoginOutputBoundary outputBoundary) {
+    public LoginInteractor(UserDataAccessInterface accountRepository, LoginOutputBoundary outputBoundary) {
         this.accountRepository = accountRepository;
         this.outputBoundary = outputBoundary;
     }
