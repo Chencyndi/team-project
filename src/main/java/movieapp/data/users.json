@@ -22,23 +22,5 @@
         "ratings": {},
         "watchlist": [102],
         "username": "alice"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "testuser"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "max"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "Luke"
     }
 ]
