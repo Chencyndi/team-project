@@ -6,6 +6,7 @@ import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
 import movieapp.interface_adapter.login.LoginController;
+import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.use_case.comment.CommentDataAccessInterface;
 
 import javax.swing.*;
@@ -25,6 +26,7 @@ public class MovieCommentView extends JFrame {
     private final PostCommentViewModel postCommentViewModel;
     private final CommentDataAccessInterface commentDataAccess;
     private final Supplier<String> currentUsernameSupplier;
+    private final LoginViewModel loginViewModel;
     private final LoginController loginController;
     
     private JPanel commentsPanel;
@@ -35,12 +37,14 @@ public class MovieCommentView extends JFrame {
                            PostCommentViewModel postCommentViewModel,
                            CommentDataAccessInterface commentDataAccess,
                            Supplier<String> currentUsernameSupplier,
+                           LoginViewModel loginViewModel,
                            LoginController loginController) {
         this.movie = movie;
         this.postCommentController = postCommentController;
         this.postCommentViewModel = postCommentViewModel;
         this.commentDataAccess = commentDataAccess;
         this.currentUsernameSupplier = currentUsernameSupplier;
+        this.loginViewModel = loginViewModel;
         this.loginController = loginController;
         
         initializeView();
@@ -217,6 +221,7 @@ public class MovieCommentView extends JFrame {
             movie.getId(),
             currentUsernameSupplier,
             this::loadAndDisplayComments,
+            loginViewModel,
             loginController
         );
         postCommentView.showView();
@@ -231,6 +236,7 @@ public class MovieCommentView extends JFrame {
             parentComment.getCommentID(),
             currentUsernameSupplier,
             this::loadAndDisplayComments,
+            loginViewModel,
             loginController
         );
         postReplyView.showView();

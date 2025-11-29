@@ -18,8 +18,7 @@ public class LoginInteractor implements LoginInputBoundary {
     public void execute(LoginInputData inputData) {
         try {
             // Find user by username
-            User user = accountRepository.findByUsername(inputData.getUsername())
-                    .orElse(null);
+            User user = accountRepository.findByUsername(inputData.getUsername());
             
             if (user == null) {
                 outputBoundary.presentUserNotFound("User does not exist");

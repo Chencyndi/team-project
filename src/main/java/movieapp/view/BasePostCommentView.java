@@ -3,6 +3,7 @@ package movieapp.view;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
 import movieapp.interface_adapter.login.LoginController;
+import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.use_case.comment.PostCommentOutputData;
 import movieapp.use_case.login.LoginOutputData;
 
@@ -19,6 +20,7 @@ public abstract class BasePostCommentView extends JDialog {
     protected final Integer movieID;
     protected final Supplier<String> currentUsernameSupplier;
     protected final Runnable onPostedCallback;
+    protected final LoginViewModel loginViewModel;
     protected final LoginController loginController;
     protected JTextArea textArea;
     protected JLabel errorLabel;
@@ -29,6 +31,7 @@ public abstract class BasePostCommentView extends JDialog {
                                    Integer movieID,
                                    Supplier<String> currentUsernameSupplier,
                                    Runnable onPostedCallback,
+                                   LoginViewModel loginViewModel,
                                    LoginController loginController) {
         super(parent, "", true);
         this.postCommentController = postCommentController;
@@ -36,6 +39,7 @@ public abstract class BasePostCommentView extends JDialog {
         this.movieID = movieID;
         this.currentUsernameSupplier = currentUsernameSupplier;
         this.onPostedCallback = onPostedCallback;
+        this.loginViewModel = loginViewModel;
         this.loginController = loginController;
     }
 
@@ -151,7 +155,7 @@ public abstract class BasePostCommentView extends JDialog {
         if (loginController != null) {
             // Create a simple login dialog that updates the username on success
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            LoginDialog loginDialog = new LoginDialog(parentFrame, loginController);
+            LoginDialog loginDialog = new LoginDialog(parentFrame, loginController, loginViewModel);
             loginDialog.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this,
@@ -164,12 +168,14 @@ public abstract class BasePostCommentView extends JDialog {
     // Simple login dialog that updates username on success
     private static class LoginDialog extends JDialog {
         private final LoginController loginController;
+        private final LoginViewModel loginViewModel;
         private JTextField usernameField;
         private JPasswordField passwordField;
         
-        public LoginDialog(JFrame parent, LoginController loginController) {
+        public LoginDialog(JFrame parent, LoginController loginController,  LoginViewModel loginViewModel) {
             super(parent, "Log In", true);
             this.loginController = loginController;
+            this.loginViewModel = loginViewModel;
             initializeDialog();
         }
         
@@ -207,21 +213,21 @@ public abstract class BasePostCommentView extends JDialog {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             
-            LoginOutputData result = loginController.login(username, password);
+            loginController.login(username, password);
             
-            if (result.isSuccess()) {
+            if (loginViewModel.isSuccess()) {
                 // Update the current username in UseCase4Application
                 try {
                     java.lang.reflect.Method setMethod = Class.forName("UseCase4Application")
                         .getMethod("setCurrentUsername", String.class);
-                    setMethod.invoke(null, result.getUsername());
+                    setMethod.invoke(null, loginViewModel.getUsername());
                 } catch (Exception e) {
                     // If reflection fails, just continue
                 }
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
-                        result.getMessage(),
+                        loginViewModel.getMessage(),
                         "Login Failed",
                         JOptionPane.ERROR_MESSAGE);
             }

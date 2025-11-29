@@ -12,6 +12,7 @@ import movieapp.interface_adapter.comment.PostCommentPresenter;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
+import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.use_case.account.CreateAccountInputBoundary;
 import movieapp.use_case.account.CreateAccountInteractor;
 import movieapp.use_case.comment.PostCommentInputBoundary;
@@ -61,7 +62,8 @@ public class UseCase4Application {
         PostCommentController postCommentController = new PostCommentController(postCommentInteractor);
 
         // Setup Login use case
-        LoginPresenter loginPresenter = new LoginPresenter();
+        LoginViewModel loginViewModel = new  LoginViewModel();
+        LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
         LoginInputBoundary loginInteractor = new LoginInteractor(accountRepo, loginPresenter);
         LoginController loginController = new LoginController(loginInteractor);
         

@@ -1,6 +1,5 @@
 // Application.java
 
-import movieapp.data_access.DBUserDataAccessObject;
 import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.interface_adapter.login.LoginController;
