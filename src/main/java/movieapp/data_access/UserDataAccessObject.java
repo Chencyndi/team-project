@@ -4,7 +4,7 @@ import movieapp.entity.Movie;
 import movieapp.entity.User;
 import movieapp.entity.Watchlist;
 import movieapp.use_case.common.UserDataAccessInterface;
-import movieapp.use_case.watchlist.WatchlistDataAccessInterface;
+import movieapp.use_case.rating.RatingDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDataAccessObject implements UserDataAccessInterface {
+public class UserDataAccessObject implements RatingDataAccessInterface, UserDataAccessInterface {
     final Path FILE_PATH = Paths.get("src/main/java/movieapp/data/users.json");
 
     private JSONArray readJSONFile() {
