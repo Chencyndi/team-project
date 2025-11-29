@@ -1,11 +1,5 @@
 package movieapp.data_access;
 
-import movieapp.entity.Comment;
-import movieapp.entity.User;
-import movieapp.use_case.comment.CommentDataAccessInterface;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,82 +9,86 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import movieapp.entity.Comment;
+import movieapp.entity.User;
+import movieapp.use_case.comment.CommentDataAccessInterface;
+import movieapp.use_case.common.UserDataAccessInterface;
+
+/**
+ * Data Access Object for managing comment data persistence.
+ * Handles reading and writing comments to JSON file storage.
+ */
 public class CommentDataAccessObject implements CommentDataAccessInterface {
-    private final Path FILE_PATH = Paths.get("src/main/java/movieapp/data/comments.json");
-    private final UserDataAccessObject userDataAccess = new UserDataAccessObject();
+    private static final Path FILE_PATH = Paths.get("src/main/java/movieapp/data/comments.json");
+    private static final int JSON_INDENT = 4;
+    private static final String MOVIE_ID_KEY = "movieID";
+    private static final String COMMENT_ID_KEY = "commentID";
+    private static final String USERNAME_KEY = "username";
+    private static final String TEXT_KEY = "text";
+    private static final String REPLIES_KEY = "replies";
+    private final UserDataAccessInterface userDataAccess;
+
+    /**
+     * Constructs a CommentDataAccessObject with the specified user data access interface.
+     *
+     * @param userDataAccess the user data access interface to use for retrieving user information
+     */
+    public CommentDataAccessObject(UserDataAccessInterface userDataAccess) {
+        this.userDataAccess = userDataAccess;
+    }
 
     private JSONArray readJSONFile() {
         try {
-            String jsonString = Files.readString(FILE_PATH);
+            final String jsonString = Files.readString(FILE_PATH);
             return new JSONArray(jsonString);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     private void writeJSONFile(JSONArray jsonArray) {
         try {
-            Files.writeString(FILE_PATH, jsonArray.toString(4));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            Files.writeString(FILE_PATH, jsonArray.toString(JSON_INDENT));
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
     public List<Comment> getComments(Integer movieID) {
-        JSONArray jsonArray = readJSONFile();
-        Map<String, Comment> map = new HashMap<>();
+        final JSONArray jsonArray = readJSONFile();
+        final Map<String, Comment> map = new HashMap<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
+            final JSONObject obj = jsonArray.getJSONObject(i);
 
-            if (obj.getInt("movieID") == movieID) {
-                String id = obj.get("commentID").toString();
-                String username = obj.getString("username");
-                User user = userDataAccess.findByUsername(username);
+            if (obj.getInt(MOVIE_ID_KEY) == movieID) {
+                final String id = obj.get(COMMENT_ID_KEY).toString();
+                final String username = obj.getString(USERNAME_KEY);
+                final User user = userDataAccess.findByUsername(username);
 
                 if (user != null) {
-                    map.put(id, new Comment(id, user, new ArrayList<>(), obj.getString("text"), movieID));
+                    map.put(id, new Comment(id, user, new ArrayList<>(), obj.getString(TEXT_KEY), movieID));
                 }
             }
         }
 
+        extracted(movieID, jsonArray, map);
+
+        final List<String> allReplyIds = getStrings(movieID, jsonArray);
+
+        final List<Comment> topLevel = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
-
-            if (obj.getInt("movieID") != movieID) continue;
-
-            Comment parent = map.get(obj.getString("commentID"));
-            if (parent == null) continue;
-
-            JSONArray replyIDs = obj.getJSONArray("replies");
-
-            for (int r = 0; r < replyIDs.length(); r++) {
-                Comment child = map.get(replyIDs.getString(r));
-                if (child != null) {
-                    parent.addReply(child);
-                }
-            }
-        }
-
-        List<String> allReplyIDs = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
-            if (obj.getInt("movieID") == movieID) {
-                JSONArray replyIDs = obj.getJSONArray("replies");
-                for (int r = 0; r < replyIDs.length(); r++) {
-                    allReplyIDs.add(replyIDs.getString(r));
-                }
-            }
-        }
-
-        List<Comment> topLevel = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
-            if (obj.getInt("movieID") == movieID) {
-                String commentID = obj.getString("commentID");
-                if (!allReplyIDs.contains(commentID)) {
-                    Comment comment = map.get(commentID);
+            final JSONObject obj = jsonArray.getJSONObject(i);
+            if (obj.getInt(MOVIE_ID_KEY) == movieID) {
+                final String commentId = obj.getString(COMMENT_ID_KEY);
+                if (!allReplyIds.contains(commentId)) {
+                    final Comment comment = map.get(commentId);
                     if (comment != null) {
                         topLevel.add(comment);
                     }
@@ -101,42 +99,78 @@ public class CommentDataAccessObject implements CommentDataAccessInterface {
         return topLevel;
     }
 
+    private static void extracted(Integer movieID, JSONArray jsonArray, Map<String, Comment> map) {
+        for (int i = 0; i < jsonArray.length(); i++) {
+            final JSONObject obj = jsonArray.getJSONObject(i);
+
+            if (obj.getInt(MOVIE_ID_KEY) != movieID) {
+                continue;
+            }
+
+            final Comment parent = map.get(obj.getString(COMMENT_ID_KEY));
+            if (parent == null) {
+                continue;
+            }
+
+            final JSONArray replyIds = obj.getJSONArray(REPLIES_KEY);
+
+            for (int r = 0; r < replyIds.length(); r++) {
+                final Comment child = map.get(replyIds.getString(r));
+                if (child != null) {
+                    parent.addReply(child);
+                }
+            }
+        }
+    }
+
+    private static List<String> getStrings(Integer movieID, JSONArray jsonArray) {
+        final List<String> allReplyIds = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            final JSONObject obj = jsonArray.getJSONObject(i);
+            if (obj.getInt(MOVIE_ID_KEY) == movieID) {
+                final JSONArray replyIds = obj.getJSONArray(REPLIES_KEY);
+                for (int r = 0; r < replyIds.length(); r++) {
+                    allReplyIds.add(replyIds.getString(r));
+                }
+            }
+        }
+        return allReplyIds;
+    }
+
     @Override
     public void addComment(Comment comment) {
-        JSONArray jsonArray = readJSONFile();
+        final JSONArray jsonArray = readJSONFile();
 
-        JSONObject newObj = new JSONObject();
-        newObj.put("commentID", comment.getCommentID());
-        newObj.put("username", comment.getCommenter().getUsername());
-        newObj.put("movieID", comment.getMovieID());
-        newObj.put("text", comment.getText());
-        newObj.put("replies", new JSONArray());
+        final JSONObject newObj = new JSONObject();
+        newObj.put(COMMENT_ID_KEY, comment.getCommentID());
+        newObj.put(USERNAME_KEY, comment.getCommenter().getUsername());
+        newObj.put(MOVIE_ID_KEY, comment.getMovieID());
+        newObj.put(TEXT_KEY, comment.getText());
+        newObj.put(REPLIES_KEY, new JSONArray());
 
         jsonArray.put(newObj);
         writeJSONFile(jsonArray);
-
     }
 
     @Override
     public void addReply(Comment reply, String parentCommentID) {
-        JSONArray jsonArray = readJSONFile();
-        JSONObject replyObj = new JSONObject();
-        replyObj.put("commentID", reply.getCommentID());
-        replyObj.put("username", reply.getCommenter().getUsername());
-        replyObj.put("movieID", reply.getMovieID());
-        replyObj.put("text", reply.getText());
-        replyObj.put("replies", new JSONArray());
+        final JSONArray jsonArray = readJSONFile();
+        final JSONObject replyObj = new JSONObject();
+        replyObj.put(COMMENT_ID_KEY, reply.getCommentID());
+        replyObj.put(USERNAME_KEY, reply.getCommenter().getUsername());
+        replyObj.put(MOVIE_ID_KEY, reply.getMovieID());
+        replyObj.put(TEXT_KEY, reply.getText());
+        replyObj.put(REPLIES_KEY, new JSONArray());
         jsonArray.put(replyObj);
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
-            if (obj.getString("commentID").equals(parentCommentID)) {
-                JSONArray replies = obj.getJSONArray("replies");
+            final JSONObject obj = jsonArray.getJSONObject(i);
+            if (obj.getString(COMMENT_ID_KEY).equals(parentCommentID)) {
+                final JSONArray replies = obj.getJSONArray(REPLIES_KEY);
                 replies.put(reply.getCommentID());
                 break;
             }
         }
 
         writeJSONFile(jsonArray);
-
     }
 }

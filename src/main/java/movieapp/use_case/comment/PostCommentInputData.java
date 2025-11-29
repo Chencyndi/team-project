@@ -23,15 +23,19 @@ public class PostCommentInputData {
     public String getComment() {
         return comment;
     }
+
     public String getCommentID() {
         return commentID;
     }
+
     public String getCommenter() {
         return commenter;
     }
+
     public Integer getMovieID() {
         return movieID;
     }
+
     public String getParentCommentID() {
         return parentCommentID;
     }

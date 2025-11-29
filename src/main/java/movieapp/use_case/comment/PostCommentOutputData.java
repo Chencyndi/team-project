@@ -10,12 +10,15 @@ public class PostCommentOutputData {
         this.commenter = commenter;
         this.text = text;
     }
+
     public String getCommentId() {
         return commentId;
     }
+
     public String getCommenter() {
         return commenter;
     }
+
     public String getText() {
         return text;
     }
