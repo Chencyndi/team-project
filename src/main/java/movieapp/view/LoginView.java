@@ -70,7 +70,7 @@ public class LoginView extends JFrame {
             openAccountView(loginViewModel.getUsername());
             dispose();
         } else {
-            showUserNotExistView(loginViewModel.getMessage());
+            showLoginFailView(loginViewModel.getMessage());
         }
     }
     
@@ -87,9 +87,9 @@ public class LoginView extends JFrame {
         accountView.setVisible(true);
     }
     
-    private void showUserNotExistView(String errorMessage) {
-        UserNotExistView userNotExistView = new UserNotExistView(this, errorMessage);
-        userNotExistView.setVisible(true);
+    private void showLoginFailView(String errorMessage) {
+        LoginFailView loginFailView = new LoginFailView(this, errorMessage);
+        loginFailView.setVisible(true);
     }
     
     public void showView() {
