@@ -1,5 +1,5 @@
 // AccountRepository.java
-package movieapp.interface_adapter;
+package movieapp.interface_adapter.login;
 
 import movieapp.entity.User;
 

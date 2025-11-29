@@ -2,26 +2,42 @@ package movieapp.interface_adapter.account;
 
 import movieapp.use_case.account.CreateAccountOutputBoundary;
 import movieapp.use_case.account.CreateAccountOutputData;
+import movieapp.view.CreateAccountView;
 
 public class CreateAccountPresenter implements CreateAccountOutputBoundary {
+
+    private final CreateAccountViewModel viewModel;
+
+    public CreateAccountPresenter(CreateAccountViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
     @Override
-    public CreateAccountOutputData presentSuccess(String message, String username) {
-        return new CreateAccountOutputData(true, message, username);
+    public void presentSuccess(CreateAccountOutputData outputData) {
+        viewModel.setSuccess(outputData.isSuccess());
+        viewModel.setMessage(outputData.getMessage());
+        viewModel.setUsername(outputData.getUsername());
+
     }
 
     @Override
-    public CreateAccountOutputData presentPasswordMismatch(String message) {
-        return new CreateAccountOutputData(false, message, null);
+    public void presentPasswordMismatch(String message) {
+        viewModel.setSuccess(false);
+        viewModel.setMessage(message);
+        viewModel.setUsername(null);
     }
 
     @Override
-    public CreateAccountOutputData presentUsernameExists(String message) {
-        return new CreateAccountOutputData(false, message, null);
+    public void presentUsernameExists(String message) {
+        viewModel.setSuccess(false);
+        viewModel.setMessage(message);
+        viewModel.setUsername(null);
     }
 
     @Override
-    public CreateAccountOutputData presentValidationError(String message) {
-        return new CreateAccountOutputData(false, message, null);
+    public void presentValidationError(String message) {
+        viewModel.setSuccess(false);
+        viewModel.setMessage(message);
+        viewModel.setUsername(null);
     }
 
 }

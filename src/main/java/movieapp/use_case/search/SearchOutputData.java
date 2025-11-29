@@ -1,6 +1,8 @@
 package movieapp.use_case.search;
 
 import movieapp.entity.Movie;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchOutputData {

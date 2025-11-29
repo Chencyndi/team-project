@@ -1,6 +1,7 @@
 // LoginView.java
 package movieapp.view;
 
+import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.interface_adapter.login.LoginViewModel;
@@ -10,13 +11,20 @@ import java.awt.*;
 
 public class LoginView extends JFrame {
     private final LoginController loginController;
+    private final LoginViewModel loginViewModel;
     private final CreateAccountController accountController;
+    private final CreateAccountViewModel createAccountViewModel;
     private JTextField usernameField;
     private JPasswordField passwordField;
     
-    public LoginView(LoginController loginController, CreateAccountController accountController) {
+    public LoginView(LoginController loginController,
+                     LoginViewModel loginViewModel,
+                     CreateAccountController accountController,
+                     CreateAccountViewModel createAccountViewModel) {
         this.loginController = loginController;
+        this.loginViewModel = loginViewModel;
         this.accountController = accountController;
+        this.createAccountViewModel = createAccountViewModel;
         initializeUI();
     }
     
@@ -58,17 +66,18 @@ public class LoginView extends JFrame {
         
         loginController.login(username, password);
         
-        if (LoginViewModel.SUCCESS == true) {
-            openAccountView(LoginViewModel.USERNAME);
+        if (loginViewModel.isSuccess()) {
+            openAccountView(loginViewModel.getUsername());
             dispose();
         } else {
-            showUserNotExistView(LoginViewModel.MESSAGE);
+            showUserNotExistView(loginViewModel.getMessage());
         }
     }
     
     private void openCreateAccountView() {
 
-        CreateAccountView createAccountView = new CreateAccountView(accountController, this);
+        CreateAccountView createAccountView = new CreateAccountView(accountController,
+                createAccountViewModel,this);
         createAccountView.setVisible(true);
         setVisible(false);
     }

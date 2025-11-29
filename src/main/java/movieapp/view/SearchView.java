@@ -2,20 +2,25 @@
 package movieapp.view;
 
 import movieapp.entity.Movie;
+import movieapp.interface_adapter.search.MovieViewModel;
 import movieapp.interface_adapter.search.SearchController;
-import movieapp.use_case.search.SearchOutputData;
+import movieapp.interface_adapter.search.SearchViewModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
+
 
 public class SearchView extends JFrame {
     private final SearchController searchController;
+    private final SearchViewModel  searchViewModel;
     private JTextField searchField;
     private JPanel resultsPanel;
     
-    public SearchView(SearchController searchController) {
+    public SearchView(SearchController searchController,  SearchViewModel searchViewModel) {
         this.searchController = searchController;
+        this.searchViewModel = searchViewModel;
         initializeView();
     }
     
@@ -68,57 +73,57 @@ public class SearchView extends JFrame {
             return;
         }
 
-        SearchOutputData result = searchController.search(query);
+        searchController.search(query);
         
-        if (result.isSuccess()) {
-            displayMovies(result.getMovies());
+        if (searchViewModel.isSuccess()) {
+            displayMovies((searchViewModel.getMovies()));
         } else {
-            JOptionPane.showMessageDialog(this, result.getMessage());
+            JOptionPane.showMessageDialog(this, searchViewModel.getMessage());
         }
     }
-    
-    private void displayMovies(java.util.List<Movie> movies) {
+
+    private void displayMovies(List<MovieViewModel> movieViewModels) {
         resultsPanel.removeAll();
-        
-        if (movies == null || movies.isEmpty()) {
+
+        if (movieViewModels == null || movieViewModels.isEmpty()) {
             resultsPanel.add(new JLabel("No movies found"));
         } else {
-            for (Movie movie : movies) {
-                JPanel moviePanel = createMoviePanel(movie);
+            for (MovieViewModel vm : movieViewModels) {
+                JPanel moviePanel = createMoviePanel(vm);
                 resultsPanel.add(moviePanel);
                 resultsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
         }
-        
+
         resultsPanel.revalidate();
         resultsPanel.repaint();
     }
-    
-    private JPanel createMoviePanel(Movie movie) {
+
+
+    private JPanel createMoviePanel(MovieViewModel vm) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         panel.setBackground(Color.WHITE);
-        
-        // Clickable movie name
-        JLabel nameLabel = new JLabel(movie.getTitle());
+
+        JLabel nameLabel = new JLabel(vm.getName());
         nameLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         nameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                showMovieDetails(movie);
+                showMovieDetails(vm);
             }
         });
-        
-        // Rating info
-        JLabel ratingLabel = new JLabel("Rating: " + movie.getVoteAverage() + "/10");
-        
+
+        JLabel ratingLabel = new JLabel("Rating: " + vm.getRating() + "/10");
+
         panel.add(nameLabel, BorderLayout.CENTER);
         panel.add(ratingLabel, BorderLayout.EAST);
-        
+
         return panel;
     }
+
     
-    private void showMovieDetails(Movie movie) {
-        MovieDetailsView detailsView = new MovieDetailsView(movie);
+    private void showMovieDetails(MovieViewModel movieViewModel) {
+        MovieDetailsView detailsView = new MovieDetailsView(movieViewModel);
         detailsView.setVisible(true);
     }
 }

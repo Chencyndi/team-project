@@ -2,20 +2,21 @@
 package movieapp.view;
 
 import movieapp.entity.Movie;
+import movieapp.interface_adapter.search.MovieViewModel;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MovieDetailsView extends JFrame {
-    private final Movie movie;
+    private final MovieViewModel movieViewModel;
     
-    public MovieDetailsView(Movie movie) {
-        this.movie = movie;
+    public MovieDetailsView(MovieViewModel movieViewModel) {
+        this.movieViewModel = movieViewModel;
         initializeView();
     }
     
     private void initializeView() {
-        setTitle("Movie: " + movie.getTitle());
+        setTitle("Movie: " + movieViewModel.getName());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -27,10 +28,10 @@ public class MovieDetailsView extends JFrame {
         JPanel infoPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         infoPanel.setBorder(BorderFactory.createTitledBorder("Movie Information"));
         
-        infoPanel.add(new JLabel("Title: " + movie.getTitle()));
-        infoPanel.add(new JLabel("Overview: " + movie.getOverview()));
-        infoPanel.add(new JLabel("Rating: " + movie.getVoteAverage() + "/10"));
-        infoPanel.add(new JLabel("Comments: " + movie.getComments().size()));
+        infoPanel.add(new JLabel("Title: " + movieViewModel.getName()));
+        infoPanel.add(new JLabel("Overview: " + movieViewModel.getOverview()));
+        infoPanel.add(new JLabel("Rating: " + movieViewModel.getRating() + "/10"));
+        infoPanel.add(new JLabel("Comments: " + movieViewModel.getCommentCount()));
         
         // Close button
         JButton closeButton = new JButton("Close");

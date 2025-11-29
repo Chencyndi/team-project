@@ -3,37 +3,39 @@ package movieapp.interface_adapter.login;
 
 import movieapp.use_case.login.LoginOutputBoundary;
 import movieapp.use_case.login.LoginOutputData;
+import movieapp.view.LoginView;
 
 public class LoginPresenter implements LoginOutputBoundary {
+    private LoginViewModel loginViewModel;
+
+    public LoginPresenter(LoginViewModel loginViewModel) {
+        this.loginViewModel = loginViewModel;
+    }
     @Override
-    public void presentSuccess(String message, String username) {
-       final LoginOutputData outputdata = new LoginOutputData(true, message, username);
-       LoginViewModel.SUCCESS = outputdata.isSuccess();
-       LoginViewModel.MESSAGE = outputdata.getMessage();
-       LoginViewModel.USERNAME = outputdata.getUsername();
+    public void presentSuccess(LoginOutputData loginOutputData) {
+        loginViewModel.setUsername(loginOutputData.getUsername());
+        loginViewModel.setSuccess(loginOutputData.isSuccess());
+        loginViewModel.setMessage(loginOutputData.getMessage());
     }
     
     @Override
     public void presentUserNotFound(String message) {
-        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
-        LoginViewModel.SUCCESS = outputdata.isSuccess();
-        LoginViewModel.MESSAGE = outputdata.getMessage();
-        LoginViewModel.USERNAME = outputdata.getUsername();
+        loginViewModel.setSuccess(false);
+        loginViewModel.setMessage(message);
+        loginViewModel.setUsername(null);
     }
     
     @Override
     public void presentInvalidPassword(String message) {
-        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
-        LoginViewModel.SUCCESS = outputdata.isSuccess();
-        LoginViewModel.MESSAGE = outputdata.getMessage();
-        LoginViewModel.USERNAME = outputdata.getUsername();
+        loginViewModel.setSuccess(false);
+        loginViewModel.setMessage(message);
+        loginViewModel.setUsername(null);
     }
     
     @Override
     public void presentValidationError(String message) {
-        final LoginOutputData outputdata = new LoginOutputData(false, message, null);
-        LoginViewModel.SUCCESS = outputdata.isSuccess();
-        LoginViewModel.MESSAGE = outputdata.getMessage();
-        LoginViewModel.USERNAME = outputdata.getUsername();
+        loginViewModel.setSuccess(false);
+        loginViewModel.setMessage(message);
+        loginViewModel.setUsername(null);
     }
 }

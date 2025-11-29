@@ -2,7 +2,7 @@
 package movieapp.data_access;
 
 import movieapp.entity.User;
-import movieapp.interface_adapter.AccountRepository;
+import movieapp.interface_adapter.login.AccountRepository;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;

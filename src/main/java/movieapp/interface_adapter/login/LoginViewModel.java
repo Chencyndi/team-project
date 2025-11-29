@@ -14,9 +14,27 @@ public class LoginViewModel {
     public static final String PASSWORD = "Password:";
     public static final String LOGIN_BUTTON = "Login";
     public static final String CREATE_BUTTON = "Create Account";
-    public static boolean SUCCESS = false;
-    public static String MESSAGE = "";
-    public static String USERNAME = "";
+    private boolean success;
+    private String message;
+    private String username;
 
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    public boolean isSuccess() {
+        return success;
+    }
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 
 }

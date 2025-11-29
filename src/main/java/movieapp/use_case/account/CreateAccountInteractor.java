@@ -2,8 +2,7 @@
 package movieapp.use_case.account;
 
 import movieapp.entity.User;
-import movieapp.entity.Watchlist;
-import movieapp.interface_adapter.AccountRepository;
+import movieapp.interface_adapter.login.AccountRepository;
 
 public class CreateAccountInteractor implements CreateAccountInputBoundary {
     private final AccountRepository accountRepository;
@@ -16,26 +15,27 @@ public class CreateAccountInteractor implements CreateAccountInputBoundary {
     }
     
     @Override
-    public CreateAccountOutputData execute(CreateAccountInputData inputData) {
+    public void execute(CreateAccountInputData inputData) {
         try {
             // Validate passwords match
             if (!inputData.getPassword().equals(inputData.getConfirmedPassword())) {
-                return outputBoundary.presentPasswordMismatch("Password and confirmed password do not match");
+                outputBoundary.presentPasswordMismatch("Password and confirmed password do not match");
+                return;
             }
-            
             // Check if username exists
             if (accountRepository.existsByUsername(inputData.getUsername())) {
-                return outputBoundary.presentUsernameExists("Username already exists");
+                outputBoundary.presentUsernameExists("Username already exists");
+                return;
             }
-            
             // Create and save user
             User user = new User(inputData.getUsername(), inputData.getPassword());
             accountRepository.save(user);
-            
-            return outputBoundary.presentSuccess("Account created successfully", user.getUsername());
+            CreateAccountOutputData outputData = new CreateAccountOutputData(
+                    true, "Success", inputData.getUsername());
+            outputBoundary.presentSuccess(outputData);
             
         } catch (IllegalArgumentException e) {
-            return outputBoundary.presentValidationError(e.getMessage());
+            outputBoundary.presentValidationError(e.getMessage());
         }
     }
 }

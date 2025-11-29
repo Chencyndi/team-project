@@ -6,13 +6,13 @@ import movieapp.use_case.search.SearchOutputData;
 
 public class SearchController {
     private final SearchInputBoundary searchUseCase;
-    
+
     public SearchController(SearchInputBoundary searchUseCase) {
         this.searchUseCase = searchUseCase;
     }
     
-    public SearchOutputData search(String query) {
+    public void search(String query) {
         SearchInputData inputData = new SearchInputData(query);
-        return searchUseCase.execute(inputData);
+        searchUseCase.execute(inputData);
     }
 }

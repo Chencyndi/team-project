@@ -3,7 +3,7 @@ package movieapp.use_case.login;
 
 
 import movieapp.entity.User;
-import movieapp.interface_adapter.AccountRepository;
+import movieapp.interface_adapter.login.AccountRepository;
 
 public class LoginInteractor implements LoginInputBoundary {
     private final AccountRepository accountRepository;
@@ -23,14 +23,17 @@ public class LoginInteractor implements LoginInputBoundary {
             
             if (user == null) {
                 outputBoundary.presentUserNotFound("User does not exist");
+                return;
             }
             
             // Validate password
             if (!user.validateCredentials(inputData.getPassword())) {
                 outputBoundary.presentInvalidPassword("Invalid password");
+                return;
             }
-            
-            outputBoundary.presentSuccess("Login successful", user.getUsername());
+            LoginOutputData outputData = new LoginOutputData(true,
+                    "Success", inputData.getUsername());
+            outputBoundary.presentSuccess(outputData);
             
         } catch (IllegalArgumentException e) {
             outputBoundary.presentValidationError(e.getMessage());

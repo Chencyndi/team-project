@@ -2,7 +2,7 @@
 package movieapp.data_access;
 
 import movieapp.entity.User;
-import movieapp.interface_adapter.AccountRepository;
+import movieapp.interface_adapter.login.AccountRepository;
 
 import java.util.HashMap;
 import java.util.Map;

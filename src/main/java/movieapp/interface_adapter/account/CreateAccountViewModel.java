@@ -10,4 +10,33 @@ public class CreateAccountViewModel {
     public static final String SIGNUP_BUTTON_LABEL = "Create";
     public static final String CANCEL_BUTTON_LABEL = "Cancel";
 
+    private boolean success;
+    private String username;
+    private String password;
+    private String message;
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+    public boolean isSuccess() {
+        return success;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public String getMessage() {
+        return message;
+    }
 }
