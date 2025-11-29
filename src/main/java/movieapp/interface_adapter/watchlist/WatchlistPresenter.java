@@ -45,6 +45,7 @@ public class WatchlistPresenter implements
     public void prepareSuccessView(ViewWatchlistOutputData outputData) {
         final WatchlistState state = viewModel.getState();
         state.setMovies(outputData.getMovies());
+        state.setMessage(null);
         state.setError(null);
         viewModel.setState(state);
         viewModel.firePropertyChanged();
