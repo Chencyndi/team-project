@@ -2,40 +2,40 @@
 package movieapp.use_case.account;
 
 import movieapp.entity.User;
-import movieapp.entity.Watchlist;
-import movieapp.use_case.common.UserDataAccessInterface;
+import movieapp.interface_adapter.login.AccountRepository;
 
 public class CreateAccountInteractor implements CreateAccountInputBoundary {
-    private final UserDataAccessInterface accountRepository;
+    private final AccountRepository accountRepository;
     private final CreateAccountOutputBoundary outputBoundary;
     
-    public CreateAccountInteractor(UserDataAccessInterface accountRepository,
-                                   CreateAccountOutputBoundary outputBoundary) {
+    public CreateAccountInteractor(AccountRepository accountRepository, 
+                                  CreateAccountOutputBoundary outputBoundary) {
         this.accountRepository = accountRepository;
         this.outputBoundary = outputBoundary;
     }
     
     @Override
-    public CreateAccountOutputData execute(CreateAccountInputData inputData) {
+    public void execute(CreateAccountInputData inputData) {
         try {
             // Validate passwords match
             if (!inputData.getPassword().equals(inputData.getConfirmedPassword())) {
-                return outputBoundary.presentPasswordMismatch("Password and confirmed password do not match");
+                outputBoundary.presentPasswordMismatch("Password and confirmed password do not match");
+                return;
             }
-            
             // Check if username exists
             if (accountRepository.existsByUsername(inputData.getUsername())) {
-                return outputBoundary.presentUsernameExists("Username already exists");
+                outputBoundary.presentUsernameExists("Username already exists");
+                return;
             }
-            
             // Create and save user
             User user = new User(inputData.getUsername(), inputData.getPassword());
-            accountRepository.addUser(user);
-            
-            return outputBoundary.presentSuccess("Account created successfully", user.getUsername());
+            accountRepository.save(user);
+            CreateAccountOutputData outputData = new CreateAccountOutputData(
+                    true, "Success", inputData.getUsername());
+            outputBoundary.presentSuccess(outputData);
             
         } catch (IllegalArgumentException e) {
-            return outputBoundary.presentValidationError(e.getMessage());
+            outputBoundary.presentValidationError(e.getMessage());
         }
     }
 }

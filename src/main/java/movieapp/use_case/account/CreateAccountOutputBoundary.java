@@ -2,8 +2,8 @@
 package movieapp.use_case.account;
 
 public interface CreateAccountOutputBoundary {
-    CreateAccountOutputData presentSuccess(String message, String username);
-    CreateAccountOutputData presentPasswordMismatch(String message);
-    CreateAccountOutputData presentUsernameExists(String message);
-    CreateAccountOutputData presentValidationError(String message);
+    void presentSuccess(CreateAccountOutputData outputData);
+    void presentPasswordMismatch(String message);
+    void presentUsernameExists(String message);
+    void presentValidationError(String message);
 }

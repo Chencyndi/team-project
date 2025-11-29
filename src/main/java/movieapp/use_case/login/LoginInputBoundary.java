@@ -2,5 +2,5 @@
 package movieapp.use_case.login;
 
 public interface LoginInputBoundary {
-    LoginOutputData execute(LoginInputData inputData);
+    void execute(LoginInputData inputData);
 }

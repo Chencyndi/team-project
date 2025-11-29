@@ -10,13 +10,16 @@ import java.awt.*;
 
 public class CreateAccountView extends JFrame {
     private final CreateAccountController accountController;
+    private final CreateAccountViewModel viewModel;
     private final LoginView loginView;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     
-    public CreateAccountView(CreateAccountController accountController, LoginView loginView) {
+    public CreateAccountView(CreateAccountController accountController, CreateAccountViewModel viewModel,
+                             LoginView loginView) {
         this.accountController = accountController;
+        this.viewModel = viewModel;
         this.loginView = loginView;
         initializeUI();
     }
@@ -62,13 +65,13 @@ public class CreateAccountView extends JFrame {
         String password = new String(passwordField.getPassword());
         String confirmedPassword = new String(confirmPasswordField.getPassword());
         
-        CreateAccountOutputData result = accountController.createAccount(username, password, confirmedPassword);
+        accountController.createAccount(username, password, confirmedPassword);
         
-        if (result.isSuccess()) {
-            JOptionPane.showMessageDialog(this, result.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+        if (viewModel.isSuccess()) {
+            JOptionPane.showMessageDialog(this, viewModel.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
             goBackToLogin();
         } else {
-            showPasswordNotSameView(result.getMessage());
+            showPasswordNotSameView(viewModel.getMessage());
         }
     }
     

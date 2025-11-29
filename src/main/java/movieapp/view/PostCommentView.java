@@ -4,6 +4,7 @@ package movieapp.view;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
 import movieapp.interface_adapter.login.LoginController;
+import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.use_case.comment.PostCommentOutputData;
 
 import javax.swing.*;
@@ -19,9 +20,10 @@ public class PostCommentView extends BasePostCommentView {
                            Integer movieID,
                            Supplier<String> currentUsernameSupplier,
                            Runnable onCommentPostedCallback,
+                           LoginViewModel loginViewModel,
                            LoginController loginController) {
         super(parent, postCommentController, viewModel, movieID, currentUsernameSupplier,
-                onCommentPostedCallback, loginController);
+                onCommentPostedCallback, loginViewModel, loginController);
         this.movieID = movieID;
         initializeView(500, 400, 10, 30, true);
         setTitle(getTitle());
@@ -30,7 +32,7 @@ public class PostCommentView extends BasePostCommentView {
     public PostCommentView(PostCommentController postCommentController,
                            PostCommentViewModel viewModel,
                            Integer movieID) {
-        this(null, postCommentController, viewModel, movieID, () -> null, null, null);
+        this(null, postCommentController, viewModel, movieID, () -> null, null, null, null);
     }
 
     @Override

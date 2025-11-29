@@ -1,9 +1,9 @@
 // LoginView.java
 package movieapp.view;
 
+import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.account.CreateAccountController;
-import movieapp.use_case.login.LoginOutputData;
 import movieapp.interface_adapter.login.LoginViewModel;
 
 import javax.swing.*;
@@ -11,13 +11,20 @@ import java.awt.*;
 
 public class LoginView extends JFrame {
     private final LoginController loginController;
+    private final LoginViewModel loginViewModel;
     private final CreateAccountController accountController;
+    private final CreateAccountViewModel createAccountViewModel;
     private JTextField usernameField;
     private JPasswordField passwordField;
     
-    public LoginView(LoginController loginController, CreateAccountController accountController) {
+    public LoginView(LoginController loginController,
+                     LoginViewModel loginViewModel,
+                     CreateAccountController accountController,
+                     CreateAccountViewModel createAccountViewModel) {
         this.loginController = loginController;
+        this.loginViewModel = loginViewModel;
         this.accountController = accountController;
+        this.createAccountViewModel = createAccountViewModel;
         initializeUI();
     }
     
@@ -31,7 +38,7 @@ public class LoginView extends JFrame {
         JPanel mainPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        mainPanel.add(new JLabel(LoginViewModel.USERNAME));
+        mainPanel.add(new JLabel(LoginViewModel.USERNAME_LABEL));
         usernameField = new JTextField();
         mainPanel.add(usernameField);
         
@@ -57,19 +64,20 @@ public class LoginView extends JFrame {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
         
-        LoginOutputData result = loginController.login(username, password);
+        loginController.login(username, password);
         
-        if (result.isSuccess()) {
-            openAccountView(result.getUsername());
+        if (loginViewModel.isSuccess()) {
+            openAccountView(loginViewModel.getUsername());
             dispose();
         } else {
-            showUserNotExistView(result.getMessage());
+            showUserNotExistView(loginViewModel.getMessage());
         }
     }
     
     private void openCreateAccountView() {
 
-        CreateAccountView createAccountView = new CreateAccountView(accountController, this);
+        CreateAccountView createAccountView = new CreateAccountView(accountController,
+                createAccountViewModel,this);
         createAccountView.setVisible(true);
         setVisible(false);
     }

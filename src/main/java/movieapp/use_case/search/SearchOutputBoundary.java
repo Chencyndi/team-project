@@ -7,7 +7,7 @@ import java.util.List;
 public interface SearchOutputBoundary {
 
 
-    SearchOutputData prepareSuccessView(String message, List<Movie> movies);
-    SearchOutputData prepareFailView(String errorMessage);
+    void prepareSuccessView(SearchOutputData outputData,  String searchQuery);
+    void prepareFailView(String errorMessage);
 
 }

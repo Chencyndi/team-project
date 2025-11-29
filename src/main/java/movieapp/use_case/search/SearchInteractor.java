@@ -16,23 +16,26 @@ public class SearchInteractor implements SearchInputBoundary {
     }
 
     @Override
-    public SearchOutputData execute(SearchInputData inputData) {
+    public void execute(SearchInputData inputData) {
         try {
             // Validate input
-            if (inputData.getSearchQuery() == null || inputData.getSearchQuery().trim().isEmpty()) {
-                return outputBoundary.prepareFailView("Please enter a search term");
+            if (inputData.getSearchQuery() == null || inputData.getSearchQuery().isEmpty()) {
+                outputBoundary.prepareFailView("Please enter a search term");
+                return;
             }
 
             // Search movies
-            List<Movie> movies = movieRepository.searchMovies(inputData.getSearchQuery().trim());
+            List<Movie> movies = movieRepository.searchMovies(inputData.getSearchQuery());
 
             // Get top 3 movies
             List<Movie> topMovies = movies.subList(0, Math.min(3, movies.size()));
 
-            return outputBoundary.prepareSuccessView("Found " + topMovies.size() + " movies", topMovies);
+            SearchOutputData outputData = new SearchOutputData(true,
+                    "Found " + topMovies.size() + " movies", topMovies);
+            outputBoundary.prepareSuccessView(outputData, inputData.getSearchQuery());
 
         } catch (Exception e) {
-            return outputBoundary.prepareFailView("Error: " + e.getMessage());
+            outputBoundary.prepareFailView("Error: " + e.getMessage());
         }
     }
 }

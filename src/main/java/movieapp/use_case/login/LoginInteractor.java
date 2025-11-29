@@ -3,36 +3,39 @@ package movieapp.use_case.login;
 
 
 import movieapp.entity.User;
-import movieapp.use_case.common.UserDataAccessInterface;
+import movieapp.interface_adapter.login.AccountRepository;
 
 public class LoginInteractor implements LoginInputBoundary {
-    private final UserDataAccessInterface accountRepository;
+    private final AccountRepository accountRepository;
     private final LoginOutputBoundary outputBoundary;
     
-    public LoginInteractor(UserDataAccessInterface accountRepository, LoginOutputBoundary outputBoundary) {
+    public LoginInteractor(AccountRepository accountRepository, LoginOutputBoundary outputBoundary) {
         this.accountRepository = accountRepository;
         this.outputBoundary = outputBoundary;
     }
     
     @Override
-    public LoginOutputData execute(LoginInputData inputData) {
+    public void execute(LoginInputData inputData) {
         try {
             // Find user by username
             User user = accountRepository.findByUsername(inputData.getUsername());
             
             if (user == null) {
-                return outputBoundary.presentUserNotFound("User does not exist");
+                outputBoundary.presentUserNotFound("User does not exist");
+                return;
             }
             
             // Validate password
             if (!user.validateCredentials(inputData.getPassword())) {
-                return outputBoundary.presentInvalidPassword("Invalid password");
+                outputBoundary.presentInvalidPassword("Invalid password");
+                return;
             }
-            
-            return outputBoundary.presentSuccess("Login successful", user.getUsername());
+            LoginOutputData outputData = new LoginOutputData(true,
+                    "Success", inputData.getUsername());
+            outputBoundary.presentSuccess(outputData);
             
         } catch (IllegalArgumentException e) {
-            return outputBoundary.presentValidationError(e.getMessage());
+            outputBoundary.presentValidationError(e.getMessage());
         }
     }
 }

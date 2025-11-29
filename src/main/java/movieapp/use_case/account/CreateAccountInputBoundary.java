@@ -2,5 +2,5 @@
 package movieapp.use_case.account;
 
 public interface CreateAccountInputBoundary {
-    CreateAccountOutputData execute(CreateAccountInputData inputData);
+    void execute(CreateAccountInputData inputData);
 }
