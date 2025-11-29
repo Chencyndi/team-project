@@ -7,9 +7,11 @@ import movieapp.entity.User;
 import movieapp.entity.Watchlist;
 import movieapp.interface_adapter.account.CreateAccountController;
 import movieapp.interface_adapter.account.CreateAccountPresenter;
+import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentPresenter;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
+import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
 import movieapp.interface_adapter.login.LoginViewModel;
@@ -64,13 +66,14 @@ public class UseCase4Application {
         // Setup Login use case
         LoginViewModel loginViewModel = new  LoginViewModel();
         LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
-        LoginInputBoundary loginInteractor = new LoginInteractor(accountRepo, loginPresenter);
+        LoginInputBoundary loginInteractor = new LoginInteractor((AccountRepository) accountRepo, loginPresenter);
         LoginController loginController = new LoginController(loginInteractor);
         
         // Setup Create Account use case
-        CreateAccountPresenter createAccountPresenter = new CreateAccountPresenter();
+        CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel();
+        CreateAccountPresenter createAccountPresenter = new CreateAccountPresenter(createAccountViewModel);
         CreateAccountInputBoundary createAccountInteractor = new CreateAccountInteractor
-                (accountRepo, createAccountPresenter);
+                ((AccountRepository) accountRepo, createAccountPresenter);
         CreateAccountController createAccountController = new CreateAccountController(createAccountInteractor);
 
         // Current username supplier - returns the logged in username
@@ -99,6 +102,7 @@ public class UseCase4Application {
                         postCommentViewModel,
                         commentDataAccess,
                         currentUsernameSupplier,
+                        loginViewModel,
                         loginController
                 );
                 movieCommentView.showView();
@@ -115,6 +119,7 @@ public class UseCase4Application {
                         postCommentViewModel,
                         commentDataAccess,
                         currentUsernameSupplier,
+                        loginViewModel,
                         loginController
                 );
                 movieCommentView.showView();

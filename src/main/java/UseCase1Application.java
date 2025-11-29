@@ -1,5 +1,6 @@
 // Application.java
 
+import movieapp.data_access.UserDataAccessObject;
 import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.interface_adapter.login.LoginController;
@@ -20,7 +21,7 @@ public class UseCase1Application {
     public static void main(String[] args) {
         // Dependency Injection Setup
         String baseUrl = "http://vm003.teach.cs.toronto.edu:20112";
-        AccountRepository accountRepository = new DBUserDataAccessObject(baseUrl);
+        AccountRepository accountRepository = new UserDataAccessObject();
 
         CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel();
         LoginViewModel loginViewModel = new LoginViewModel();
