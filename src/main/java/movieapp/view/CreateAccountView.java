@@ -2,7 +2,6 @@
 package movieapp.view;
 
 import movieapp.interface_adapter.account.CreateAccountController;
-import movieapp.use_case.account.CreateAccountOutputData;
 import movieapp.interface_adapter.account.CreateAccountViewModel;
 
 import javax.swing.*;
@@ -71,13 +70,13 @@ public class CreateAccountView extends JFrame {
             JOptionPane.showMessageDialog(this, viewModel.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
             goBackToLogin();
         } else {
-            showPasswordNotSameView(viewModel.getMessage());
+            showCreateAccountFailView(viewModel.getMessage());
         }
     }
     
-    private void showPasswordNotSameView(String errorMessage) {
-        PasswordNotSameView passwordNotSameView = new PasswordNotSameView(this, errorMessage);
-        passwordNotSameView.setVisible(true);
+    private void showCreateAccountFailView(String errorMessage) {
+        CreateAccountFailView createAccountFailView = new CreateAccountFailView(this, errorMessage);
+        createAccountFailView.setVisible(true);
     }
     
     private void goBackToLogin() {
