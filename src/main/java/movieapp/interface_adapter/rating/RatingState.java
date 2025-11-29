@@ -4,6 +4,7 @@ public class RatingState {
     private String message = "";
     private boolean success = false;
     private Integer currentRating = null;
+    private String averageRatingLabel = "N/A";
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
@@ -13,4 +14,7 @@ public class RatingState {
 
     public Integer getCurrentRating() { return currentRating; }
     public void setCurrentRating(Integer rating) { this.currentRating = rating; }
+
+    public String getAverageRatingLabel() { return averageRatingLabel; }
+    public void setAverageRatingLabel(String label) { this.averageRatingLabel = label; }
 }
