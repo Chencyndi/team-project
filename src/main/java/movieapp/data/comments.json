@@ -1,13 +1,16 @@
 [
     {
-        "replies": ["2"],
+        "replies": [
+            "2",
+            "994edeb9-be46-4a22-b287-e88f600d52d6"
+        ],
         "commentID": "1",
         "movieID": 640146,
         "text": "Good movie",
         "username": "max"
     },
     {
-        "replies": [],
+        "replies": ["0a0b2c75-cddc-4a91-af75-cca85c9234de"],
         "commentID": "2",
         "movieID": 640146,
         "text": "I agree",
@@ -33,5 +36,19 @@
         "movieID": 101,
         "text": "I agree with Alice!",
         "username": "charlie"
+    },
+    {
+        "replies": [],
+        "commentID": "994edeb9-be46-4a22-b287-e88f600d52d6",
+        "movieID": 640146,
+        "text": "i agree too",
+        "username": "max"
+    },
+    {
+        "replies": [],
+        "commentID": "0a0b2c75-cddc-4a91-af75-cca85c9234de",
+        "movieID": 640146,
+        "text": "yah",
+        "username": "max"
     }
 ]

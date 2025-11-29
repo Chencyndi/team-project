@@ -171,4 +171,24 @@ public class TMDBMovieAPIAccess implements MovieDataSource {
         // Trim to count
         return movies.subList(0, Math.min(count, movies.size()));
     }
+
+    // -------------------------------------------------------------------------
+    // FIND MOVIE BY ID
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Movie findById(int id) throws Exception {
+        String url = BASE_URL + "/movie/" + id + "?api_key=" + API_KEY;
+
+        JSONObject json;
+        try {
+            json = makeApiCall(url);
+        } catch (IOException e) {
+            // If TMDB returns "movie not found", return null instead of throwing
+            return null;
+        }
+
+        Movie movie = parseMovie(json);
+        return movie;
+    }
 }

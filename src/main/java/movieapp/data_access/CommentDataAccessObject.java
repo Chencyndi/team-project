@@ -116,6 +116,8 @@ public class CommentDataAccessObject implements CommentDataAccessInterface {
         writeJSONFile(jsonArray);
 
     }
+
+    @Override
     public void addReply(Comment reply, String parentCommentID) {
         JSONArray jsonArray = readJSONFile();
         JSONObject replyObj = new JSONObject();
