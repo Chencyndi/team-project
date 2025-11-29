@@ -22,5 +22,50 @@
         "ratings": {},
         "watchlist": [102],
         "username": "alice"
+<<<<<<< HEAD
+=======
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "testuser"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "max"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "Luke"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "bob"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "testuser"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "max"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "Luke"
+>>>>>>> fda08fd2b52d4d736d691507c1d401c20cd951e5
     }
 ]
