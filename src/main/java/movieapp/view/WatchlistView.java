@@ -29,23 +29,28 @@ public class WatchlistView extends JPanel implements PropertyChangeListener {
         this.controller = controller;
         this.viewModel.addPropertyChangeListener(this);
 
+        // Set up layout
         setLayout(new BorderLayout());
 
+        // Title panel
         final JPanel titlePanel = new JPanel();
         final JLabel title = new JLabel(WatchlistViewModel.TITLE);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(title);
 
+        // Message label for feedback
         messageLabel = new JLabel();
         messageLabel.setForeground(Color.BLUE);
         titlePanel.add(messageLabel);
 
+        // Refresh button
         refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(e -> refreshWatchlist());
         titlePanel.add(refreshButton);
 
         add(titlePanel, BorderLayout.NORTH);
 
+        // Movies panel with scroll
         moviesPanel = new JPanel();
         moviesPanel.setLayout(new BoxLayout(moviesPanel, BoxLayout.Y_AXIS));
         final JScrollPane scrollPane = new JScrollPane(moviesPanel);
@@ -74,10 +79,35 @@ public class WatchlistView extends JPanel implements PropertyChangeListener {
         if (WatchlistViewModel.WATCHLIST_UPDATED.equals(evt.getPropertyName())) {
             final WatchlistState state = (WatchlistState) evt.getNewValue();
             updateView(state);
+
+            // Show success message popup for any operation (add or remove)
+            if (state.getMessage() != null && !state.getMessage().isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            state.getMessage(),
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                });
+            }
+
+            // Show error if there is one
+            if (state.getError() != null && !state.getError().isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            state.getError(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                });
+            }
         }
     }
 
     private void updateView(WatchlistState state) {
+        // Update message
         if (state.getMessage() != null) {
             messageLabel.setText(state.getMessage());
             messageLabel.setForeground(Color.BLUE);
@@ -88,6 +118,7 @@ public class WatchlistView extends JPanel implements PropertyChangeListener {
             messageLabel.setText("");
         }
 
+        // Update movies list
         moviesPanel.removeAll();
 
         if (state.getMovies().isEmpty()) {
@@ -111,6 +142,7 @@ public class WatchlistView extends JPanel implements PropertyChangeListener {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
+        // Movie info
         final JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
@@ -118,8 +150,10 @@ public class WatchlistView extends JPanel implements PropertyChangeListener {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         infoPanel.add(titleLabel);
 
+        // Add other movie details based on your Movie entity
         panel.add(infoPanel, BorderLayout.CENTER);
 
+        // Remove button
         final JButton removeButton = new JButton("Remove");
         removeButton.addActionListener(e -> {
             if (currentUsername != null) {
