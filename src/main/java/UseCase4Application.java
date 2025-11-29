@@ -11,7 +11,6 @@ import movieapp.interface_adapter.account.CreateAccountViewModel;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentPresenter;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
-import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
 import movieapp.interface_adapter.login.LoginViewModel;
@@ -52,7 +51,7 @@ public class UseCase4Application {
         accountRepo.addUser(testUser3);
 
         UserDataAccessInterface userDataAccess = new UserDataAccessAdapter(accountRepo);
-        CommentDataAccessObject commentDataAccess = new CommentDataAccessObject();
+        CommentDataAccessObject commentDataAccess = new CommentDataAccessObject(userDataAccess);
 
         // Setup Post Comment use case
         PostCommentViewModel postCommentViewModel = new PostCommentViewModel();
@@ -66,14 +65,14 @@ public class UseCase4Application {
         // Setup Login use case
         LoginViewModel loginViewModel = new  LoginViewModel();
         LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
-        LoginInputBoundary loginInteractor = new LoginInteractor((AccountRepository) accountRepo, loginPresenter);
+        LoginInputBoundary loginInteractor = new LoginInteractor(accountRepo, loginPresenter);
         LoginController loginController = new LoginController(loginInteractor);
         
         // Setup Create Account use case
         CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel();
         CreateAccountPresenter createAccountPresenter = new CreateAccountPresenter(createAccountViewModel);
         CreateAccountInputBoundary createAccountInteractor = new CreateAccountInteractor
-                ((AccountRepository) accountRepo, createAccountPresenter);
+                (accountRepo, createAccountPresenter);
         CreateAccountController createAccountController = new CreateAccountController(createAccountInteractor);
 
         // Current username supplier - returns the logged in username

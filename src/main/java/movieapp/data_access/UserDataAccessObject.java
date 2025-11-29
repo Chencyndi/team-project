@@ -3,12 +3,13 @@ package movieapp.data_access;
 import movieapp.entity.Movie;
 import movieapp.entity.User;
 import movieapp.entity.Watchlist;
-import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.use_case.common.UserDataAccessInterface;
 import movieapp.use_case.rating.RatingDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDataAccessObject implements RatingDataAccessInterface, UserDataAccessInterface, AccountRepository {
+public class UserDataAccessObject implements RatingDataAccessInterface, UserDataAccessInterface {
     final Path FILE_PATH = Paths.get("src/main/java/movieapp/data/users.json");
 
     private JSONArray readJSONFile() {
@@ -69,11 +70,6 @@ public class UserDataAccessObject implements RatingDataAccessInterface, UserData
             }
         }
         return null;
-    }
-
-    @Override
-    public void save(User user){
-        
     }
 
     @Override

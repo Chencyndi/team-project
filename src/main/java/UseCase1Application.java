@@ -2,7 +2,6 @@
 
 import movieapp.data_access.UserDataAccessObject;
 import movieapp.interface_adapter.account.CreateAccountViewModel;
-import movieapp.interface_adapter.login.AccountRepository;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
 import movieapp.interface_adapter.account.CreateAccountController;
@@ -14,6 +13,7 @@ import movieapp.use_case.account.CreateAccountInputBoundary;
 import movieapp.use_case.account.CreateAccountInteractor;
 import movieapp.view.CreateAccountView;
 import movieapp.view.LoginView;
+import movieapp.use_case.common.UserDataAccessInterface;
 
 import javax.swing.*;
 
@@ -21,7 +21,7 @@ public class UseCase1Application {
     public static void main(String[] args) {
         // Dependency Injection Setup
         String baseUrl = "http://vm003.teach.cs.toronto.edu:20112";
-        AccountRepository accountRepository = new UserDataAccessObject();
+        UserDataAccessInterface accountRepository = new UserDataAccessObject();
 
         CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel();
         LoginViewModel loginViewModel = new LoginViewModel();
