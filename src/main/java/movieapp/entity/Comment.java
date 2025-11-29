@@ -26,13 +26,24 @@ public class Comment {
         return commenter;
     }
 
-    public List<Comment> getReplies() {return replies;}
+    public List<Comment> getReplies() {
+        return replies;
+    }
 
-    public void addReply(Comment reply) {replies.add(reply);}
+    /**
+     * Adds a reply to this comment.
+     *
+     * @param reply the comment object representing the reply to be added.
+     */
+    public void addReply(Comment reply) {
+        replies.add(reply);
+    }
 
     public String getText() {
         return text;
     }
 
-    public Integer getMovieID() {return movieID;}
+    public Integer getMovieID() {
+        return movieID;
+    }
 }
