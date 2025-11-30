@@ -67,7 +67,6 @@ public class LoginView extends JFrame {
         loginController.login(username, password);
         
         if (loginViewModel.isSuccess()) {
-            openAccountView(loginViewModel.getUsername());
             dispose();
         } else {
             showLoginFailView(loginViewModel.getMessage());
@@ -82,14 +81,8 @@ public class LoginView extends JFrame {
         setVisible(false);
     }
     
-    private void openAccountView(String username) {
-        AccountView accountView = new AccountView(accountController, username, this);
-        accountView.setVisible(true);
-    }
-    
     private void showLoginFailView(String errorMessage) {
-        LoginFailView loginFailView = new LoginFailView(this, errorMessage);
-        loginFailView.setVisible(true);
+        JOptionPane.showMessageDialog(null, errorMessage, "Login Error", JOptionPane.ERROR_MESSAGE);
     }
     
     public void showView() {
