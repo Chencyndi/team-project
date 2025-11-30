@@ -1,7 +1,7 @@
 package movieapp.view;
 
 import movieapp.data_access.CommentDataAccessObject;
-import movieapp.data_access.InMemoryWatchlistDAO;
+import movieapp.data_access.DatabaseWatchlistDAO;
 import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.entity.Comment;
 import movieapp.entity.Movie;
@@ -26,7 +26,7 @@ public class HomePageView extends JPanel {
 
     private final TMDBMovieAPIAccess movieAPI;
     private final WatchlistController watchlistController;
-    private final InMemoryWatchlistDAO watchlistDAO;
+    private final DatabaseWatchlistDAO watchlistDAO;
     private final RatingController ratingController;
     private final PostCommentController commentController;
     private final CommentDataAccessObject commentDataAccess;
@@ -41,7 +41,7 @@ public class HomePageView extends JPanel {
 
     public HomePageView(TMDBMovieAPIAccess movieAPI,
                         WatchlistController watchlistController,
-                        InMemoryWatchlistDAO watchlistDAO,
+                        DatabaseWatchlistDAO watchlistDAO,
                         RatingController ratingController,
                         PostCommentController commentController,
                         CommentDataAccessObject commentDataAccess,
@@ -217,7 +217,7 @@ public class HomePageView extends JPanel {
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
 
         // === LEFT: Movie Info (Use Case 6: Movie Details) ===
         JPanel infoPanel = new JPanel();

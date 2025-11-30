@@ -1,11 +1,13 @@
 package movieapp;
 
 import movieapp.data_access.*;
+import movieapp.interface_adapter.account.*;
 import movieapp.interface_adapter.login.*;
 import movieapp.interface_adapter.rating.*;
 import movieapp.interface_adapter.comment.*;
 import movieapp.interface_adapter.watchlist.*;
 import movieapp.use_case.login.*;
+import movieapp.use_case.account.*;
 import movieapp.use_case.watchlist.*;
 import movieapp.use_case.rating.*;
 import movieapp.use_case.comment.*;
@@ -20,34 +22,6 @@ public class Application {
     private static String loggedInUser;
     private static UserDataAccessObject userDB;
 
-    /** ========================= LOGIN PRESENTER ==========================**/
-    private static class AppLoginPresenter implements LoginOutputBoundary {
-        @Override
-        public void presentSuccess(LoginOutputData data) {
-            loggedInUser = data.getUsername();
-            SwingUtilities.invokeLater(Application::launchHomePage);
-        }
-
-        @Override
-        public void presentUserNotFound(String msg) {
-            showError(msg);
-        }
-
-        @Override
-        public void presentInvalidPassword(String msg) {
-            showError(msg);
-        }
-
-        @Override
-        public void presentValidationError(String msg) {
-            showError(msg);
-        }
-
-        private void showError(String msg) {
-            JOptionPane.showMessageDialog(null, msg, "Login Failed", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     /** ========================= START PROGRAM ========================== **/
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Application::launchLoginScreen);
@@ -57,14 +31,55 @@ public class Application {
     private static void launchLoginScreen() {
         userDB = new UserDataAccessObject();
 
-        loginView = new LoginView(
-                new LoginController(new LoginInteractor(userDB, new AppLoginPresenter())),
-                new LoginViewModel(),
-                null, null
-        );
+        LoginViewModel loginVM = new LoginViewModel();
+        CreateAccountViewModel createAccountVM = new CreateAccountViewModel();
 
-        loginView.setVisible(true);
+        LoginPresenter loginPresenter = new LoginPresenter(loginVM) {
+            @Override
+            public void presentSuccess(LoginOutputData data) {
+                loginVM.setSuccess(true);
+                loginVM.setMessage("Welcome " + data.getUsername() + "!");
+                loginVM.setUsername(data.getUsername());
+                loggedInUser = data.getUsername();
+                launchHomePage();
+            }
+
+            @Override
+            public void presentUserNotFound(String msg) {
+                loginVM.setSuccess(false);
+                loginVM.setMessage(msg);
+                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void presentInvalidPassword(String msg) {
+                loginVM.setSuccess(false);
+                loginVM.setMessage(msg);
+                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void presentValidationError(String msg) {
+                loginVM.setSuccess(false);
+                loginVM.setMessage(msg);
+                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+        };
+
+        CreateAccountPresenter createPresenter = new CreateAccountPresenter(createAccountVM);
+
+        LoginInputBoundary loginInteractor = new LoginInteractor(userDB, loginPresenter);
+        CreateAccountInputBoundary createInteractor = new CreateAccountInteractor(userDB, createPresenter);
+
+        LoginController loginController = new LoginController(loginInteractor);
+        CreateAccountController createController = new CreateAccountController(createInteractor);
+
+        LoginView loginScreen = new LoginView(loginController, loginVM, createController, createAccountVM);
+        new CreateAccountView(createController, createAccountVM, loginScreen);
+
+        loginScreen.setVisible(true);
     }
+
 
     /** ====================== HOMEPAGE AFTER LOGIN ====================== **/
     private static void launchHomePage() {
@@ -73,7 +88,7 @@ public class Application {
         }
 
         /** ---------- Watchlist System ----------- */
-        InMemoryWatchlistDAO watchlistDAO = new InMemoryWatchlistDAO();
+        DatabaseWatchlistDAO watchlistDAO = new DatabaseWatchlistDAO();
         watchlistDAO.setCurrentUsername(loggedInUser);
 
         WatchlistViewModel watchlistVM = new WatchlistViewModel();
