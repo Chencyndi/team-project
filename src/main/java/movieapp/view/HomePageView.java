@@ -6,12 +6,17 @@ import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.entity.Comment;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
+import movieapp.interface_adapter.comment.PostCommentViewModel;
+import movieapp.interface_adapter.login.LoginController;
+import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.interface_adapter.rating.RatingController;
+import movieapp.interface_adapter.rating.RatingViewModel;
 import movieapp.interface_adapter.watchlist.WatchlistController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Complete HomePage integrating all 6 use cases:
@@ -28,8 +33,12 @@ public class HomePageView extends JPanel {
     private final WatchlistController watchlistController;
     private final DatabaseWatchlistDAO watchlistDAO;
     private final RatingController ratingController;
+    private final RatingViewModel ratingViewModel;
     private final PostCommentController commentController;
+    private final PostCommentViewModel commentViewModel;
     private final CommentDataAccessObject commentDataAccess;
+    private final LoginViewModel loginViewModel;
+    private final LoginController loginController;
     private final String username;
     private final JPanel movieListPanel;
     private List<Movie> currentMovies;
@@ -43,16 +52,25 @@ public class HomePageView extends JPanel {
                         WatchlistController watchlistController,
                         DatabaseWatchlistDAO watchlistDAO,
                         RatingController ratingController,
+                        RatingViewModel ratingViewModel,
                         PostCommentController commentController,
+                        PostCommentViewModel commentViewModel,
                         CommentDataAccessObject commentDataAccess,
+                        LoginViewModel loginViewModel,
+                        LoginController loginController,
                         String username) {
         this.movieAPI = movieAPI;
         this.watchlistController = watchlistController;
         this.watchlistDAO = watchlistDAO;
         this.ratingController = ratingController;
+        this.ratingViewModel = ratingViewModel;
         this.commentController = commentController;
+        this.commentViewModel = commentViewModel;
         this.commentDataAccess = commentDataAccess;
+        this.loginViewModel = loginViewModel;
+        this.loginController = loginController;
         this.username = username;
+
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -270,8 +288,7 @@ public class HomePageView extends JPanel {
         buttonPanel.add(Box.createVerticalStrut(5));
 
         // Use Case 4: View/Post Comments - Load comment count from database
-        int commentCount = getCommentCount(movie.getId());
-        JButton commentsButton = new JButton("💬 Comments (" + commentCount + ")");
+        JButton commentsButton = new JButton("💬 Comments");
         commentsButton.addActionListener(e -> showCommentsDialog(movie));
         buttonPanel.add(commentsButton);
         buttonPanel.add(Box.createVerticalStrut(5));
@@ -306,225 +323,46 @@ public class HomePageView extends JPanel {
 
     // === USE CASE 3: RATE MOVIE ===
     private void showRatingDialog(Movie movie) {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
-                "Rate: " + movie.getTitle(), true);
-        dialog.setSize(400, 250);
-        dialog.setLocationRelativeTo(this);
+        SwingUtilities.invokeLater(() -> {
+            // initial rating is optional; RatingView will handle fetching via controller
+            Integer initialRating = null;
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            RatingView ratingView = new RatingView(
+                    ratingController,
+                    ratingViewModel,
+                    username,
+                    movie.getId(),
+                    movie.getTitle(),
+                    initialRating
+            );
 
-        JLabel currentRatingLabel = new JLabel("Current Rating: " + movie.getVoteAverage() + "/10");
-        currentRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(currentRatingLabel);
-        panel.add(Box.createVerticalStrut(20));
-
-        JLabel instructionLabel = new JLabel("Your Rating:");
-        instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(instructionLabel);
-
-        // Rating slider
-        JSlider ratingSlider = new JSlider(0, 10, 5);
-        ratingSlider.setMajorTickSpacing(1);
-        ratingSlider.setPaintTicks(true);
-        ratingSlider.setPaintLabels(true);
-        panel.add(ratingSlider);
-        panel.add(Box.createVerticalStrut(10));
-
-        JLabel selectedRatingLabel = new JLabel("Selected: 5/10");
-        selectedRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        ratingSlider.addChangeListener(e ->
-                selectedRatingLabel.setText("Selected: " + ratingSlider.getValue() + "/10"));
-        panel.add(selectedRatingLabel);
-        panel.add(Box.createVerticalStrut(20));
-
-        // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton submitButton = new JButton("Submit Rating");
-        submitButton.addActionListener(e -> {
-            int rating = ratingSlider.getValue();
-            // Call rating controller
-            var result = ratingController.execute(username, movie.getId(), rating);
-
-            if (result.isSuccess()) {
-                JOptionPane.showMessageDialog(dialog,
-                        result.getMessage(),
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                dialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(dialog,
-                        result.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
+                    "Rate: " + movie.getTitle(), true);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.add(ratingView);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
         });
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(e -> dialog.dispose());
-        buttonPanel.add(submitButton);
-        buttonPanel.add(cancelButton);
-        panel.add(buttonPanel);
-
-        dialog.add(panel);
-        dialog.setVisible(true);
     }
 
     // === USE CASE 4: COMMENTS ===
-
-    /**
-     * Get the count of comments for a movie from the database
-     */
-    private int getCommentCount(Integer movieId) {
-        try {
-            List<Comment> comments = commentDataAccess.getComments(movieId);
-            return comments.size();
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
     private void showCommentsDialog(Movie movie) {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
-                "Comments: " + movie.getTitle(), true);
-        dialog.setSize(600, 500);
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout());
+        SwingUtilities.invokeLater(() -> {
+            Supplier<String> currentUsernameSupplier = () -> username;
 
-        // Load comments from database
-        List<Comment> comments;
-        try {
-            comments = commentDataAccess.getComments(movie.getId());
-        } catch (Exception e) {
-            comments = List.of();
-        }
+            MovieCommentView commentView = new MovieCommentView(
+                    movie,
+                    commentController,
+                    commentViewModel,
+                    commentDataAccess,
+                    currentUsernameSupplier,
+                    loginViewModel,
+                    loginController
+            );
 
-        // Comments list
-        JPanel commentsPanel = new JPanel();
-        commentsPanel.setLayout(new BoxLayout(commentsPanel, BoxLayout.Y_AXIS));
-
-        if (comments.isEmpty()) {
-            JLabel noCommentsLabel = new JLabel("No comments yet. Be the first to comment!");
-            noCommentsLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            commentsPanel.add(noCommentsLabel);
-        } else {
-            for (Comment comment : comments) {
-                commentsPanel.add(createCommentCard(comment));
-            }
-        }
-
-        JScrollPane commentsScroll = new JScrollPane(commentsPanel);
-        dialog.add(commentsScroll, BorderLayout.CENTER);
-
-        // Post comment section
-        JPanel postPanel = new JPanel(new BorderLayout(10, 10));
-        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JTextArea commentArea = new JTextArea(3, 40);
-        commentArea.setLineWrap(true);
-        commentArea.setWrapStyleWord(true);
-        JScrollPane textScroll = new JScrollPane(commentArea);
-
-        JButton postButton = new JButton("Post Comment");
-        postButton.addActionListener(e -> {
-            String commentText = commentArea.getText().trim();
-            if (!commentText.isEmpty()) {
-                // Call comment controller
-                var result = commentController.execute(username, commentText, movie.getId());
-
-                if (result.getCommentId() != null) {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Comment posted successfully!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    dialog.dispose();
-                    // Refresh the comments dialog to show the new comment
-                    showCommentsDialog(movie);
-                } else {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Failed to post comment. Please try again.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(dialog,
-                        "Comment cannot be empty!",
-                        "Validation Error",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+            commentView.showView(); // Opens the comment UI exactly like Use Case 4
         });
-
-        postPanel.add(new JLabel("Post a comment:"), BorderLayout.NORTH);
-        postPanel.add(textScroll, BorderLayout.CENTER);
-        postPanel.add(postButton, BorderLayout.EAST);
-
-        dialog.add(postPanel, BorderLayout.SOUTH);
-        dialog.setVisible(true);
-    }
-
-    /**
-     * Create a comment card UI component (supports nested replies)
-     */
-    private JPanel createCommentCard(Comment comment) {
-        JPanel commentCard = new JPanel();
-        commentCard.setLayout(new BoxLayout(commentCard, BoxLayout.Y_AXIS));
-        commentCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-
-        // Author and text
-        JLabel authorLabel = new JLabel(comment.getCommenter().getUsername());
-        authorLabel.setFont(new Font("Arial", Font.BOLD, 12));
-
-        JLabel contentLabel = new JLabel("<html><p style='width:500px'>" +
-                comment.getText() + "</p></html>");
-        contentLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-
-        commentCard.add(authorLabel);
-        commentCard.add(Box.createVerticalStrut(5));
-        commentCard.add(contentLabel);
-
-        // Display replies (if any)
-        if (!comment.getReplies().isEmpty()) {
-            JPanel repliesPanel = new JPanel();
-            repliesPanel.setLayout(new BoxLayout(repliesPanel, BoxLayout.Y_AXIS));
-            repliesPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 0, 0)); // Indent replies
-
-            for (Comment reply : comment.getReplies()) {
-                repliesPanel.add(createReplyCard(reply));
-            }
-
-            commentCard.add(repliesPanel);
-        }
-
-        return commentCard;
-    }
-
-    /**
-     * Create a reply card (simplified version of comment card)
-     */
-    private JPanel createReplyCard(Comment reply) {
-        JPanel replyCard = new JPanel();
-        replyCard.setLayout(new BoxLayout(replyCard, BoxLayout.Y_AXIS));
-        replyCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 2, 0, 0, new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 10, 5, 5)
-        ));
-        replyCard.setBackground(new Color(250, 250, 250));
-
-        JLabel authorLabel = new JLabel("↳ " + reply.getCommenter().getUsername());
-        authorLabel.setFont(new Font("Arial", Font.BOLD, 11));
-        authorLabel.setForeground(new Color(100, 100, 100));
-
-        JLabel contentLabel = new JLabel("<html><p style='width:450px'>" +
-                reply.getText() + "</p></html>");
-        contentLabel.setFont(new Font("Arial", Font.PLAIN, 10));
-
-        replyCard.add(authorLabel);
-        replyCard.add(contentLabel);
-
-        return replyCard;
     }
 
     // === USE CASE 6: MOVIE DETAILS ===
