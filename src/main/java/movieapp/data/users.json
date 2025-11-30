@@ -1,10 +1,9 @@
 [
     {
         "password": "1234",
-        "ratings": [{
-            "movie": 502356,
-            "rating": 3
-        }],
+        "ratings": {
+            "502356": 3
+        },
         "watchlist": [
             502356,
             76600
@@ -13,11 +12,8 @@
     },
     {
         "password": "abcd",
-        "ratings": [],
-        "watchlist": [
-            1033462,
-            967941
-        ],
+        "ratings": {},
+        "watchlist": [],
         "username": "max"
     },
     {
