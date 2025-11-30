@@ -1,5 +1,4 @@
 import movieapp.data_access.UserDataAccessObject;
-import movieapp.entity.User;
 import movieapp.interface_adapter.rating.*;
 import movieapp.use_case.rating.*;
 import movieapp.use_case.common.UserDataAccessInterface;

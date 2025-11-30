@@ -1,0 +1,154 @@
+package movieapp;
+
+import movieapp.data_access.*;
+import movieapp.interface_adapter.login.*;
+import movieapp.interface_adapter.rating.*;
+import movieapp.interface_adapter.comment.*;
+import movieapp.interface_adapter.watchlist.*;
+import movieapp.use_case.login.*;
+import movieapp.use_case.watchlist.*;
+import movieapp.use_case.rating.*;
+import movieapp.use_case.comment.*;
+import movieapp.view.*;
+
+import javax.swing.*;
+
+public class Application {
+
+    private static JFrame mainFrame;
+    private static LoginView loginView;
+    private static String loggedInUser;
+    private static UserDataAccessObject userDB;
+
+    /** ========================= LOGIN PRESENTER ==========================**/
+    private static class AppLoginPresenter implements LoginOutputBoundary {
+        @Override
+        public void presentSuccess(LoginOutputData data) {
+            loggedInUser = data.getUsername();
+            SwingUtilities.invokeLater(Application::launchHomePage);
+        }
+
+        @Override
+        public void presentUserNotFound(String msg) {
+            showError(msg);
+        }
+
+        @Override
+        public void presentInvalidPassword(String msg) {
+            showError(msg);
+        }
+
+        @Override
+        public void presentValidationError(String msg) {
+            showError(msg);
+        }
+
+        private void showError(String msg) {
+            JOptionPane.showMessageDialog(null, msg, "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** ========================= START PROGRAM ========================== **/
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Application::launchLoginScreen);
+    }
+
+    /** ========================= SHOW LOGIN FIRST ======================= **/
+    private static void launchLoginScreen() {
+        userDB = new UserDataAccessObject();
+
+        loginView = new LoginView(
+                new LoginController(new LoginInteractor(userDB, new AppLoginPresenter())),
+                new LoginViewModel(),
+                null, null
+        );
+
+        loginView.setVisible(true);
+    }
+
+    /** ====================== HOMEPAGE AFTER LOGIN ====================== **/
+    private static void launchHomePage() {
+        if (loginView != null) {
+            loginView.setVisible(false);
+        }
+
+        /** ---------- Watchlist System ----------- */
+        InMemoryWatchlistDAO watchlistDAO = new InMemoryWatchlistDAO();
+        watchlistDAO.setCurrentUsername(loggedInUser);
+
+        WatchlistViewModel watchlistVM = new WatchlistViewModel();
+        WatchlistPresenter watchlistPresenter = new WatchlistPresenter(watchlistVM);
+
+        WatchlistController watchlistController = new WatchlistController(
+                new AddToWatchlistInteractor(watchlistDAO, watchlistPresenter),
+                new RemoveFromWatchlistInteractor(watchlistDAO, watchlistPresenter),
+                new ViewWatchlistInteractor(watchlistDAO, watchlistPresenter)
+        );
+
+        /** ---------- Rating System (EXACTLY LIKE DEMO) ----------- */
+        RatingViewModel ratingViewModel = new RatingViewModel();
+        RatingPresenter ratingPresenter = new RatingPresenter(ratingViewModel);
+        RatingInteractor ratingInteractor = new RatingInteractor(userDB, ratingPresenter);
+        RatingController ratingController = new RatingController(ratingInteractor);
+
+        /** ---------- Comment System ----------- */
+        CommentDataAccessObject commentDB = new CommentDataAccessObject(userDB);
+        PostCommentViewModel commentVM = new PostCommentViewModel();
+        PostCommentPresenter commentPresenter = new PostCommentPresenter(commentVM);
+        PostCommentController commentController = new PostCommentController(
+                new PostCommentInteractor(commentDB, userDB, commentPresenter)
+        );
+
+        /** ---------- Home UI Frame ----------- */
+        TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
+        HomePageView homePage = new HomePageView(
+                movieAPI, watchlistController, watchlistDAO,
+                ratingController, commentController, commentDB, loggedInUser
+        );
+
+        WatchlistView watchlistView = new WatchlistView(watchlistVM, watchlistController);
+        watchlistView.setCurrentUsername(loggedInUser);
+
+        /** ---------- UI Tabs ----------- */
+        mainFrame = new JFrame("Movie App - Logged in as " + loggedInUser);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(1200, 800);
+        mainFrame.setLocationRelativeTo(null);
+
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("🏠 Home", homePage);
+        tabs.addTab("⭐ My Watchlist", watchlistView);
+
+        tabs.addChangeListener(e -> {
+            if (tabs.getSelectedIndex() == 0) {
+                homePage.refreshMovies();
+            }
+            if (tabs.getSelectedIndex() == 1) {
+                watchlistController.viewWatchlist(loggedInUser);
+            }
+        });
+
+        /** ---------- LOGOUT BUTTON ----------- */
+        JMenuBar bar = new JMenuBar();
+        JMenu account = new JMenu("Account");
+        JMenuItem logout = new JMenuItem("Logout");
+        logout.addActionListener(e -> logout());
+        account.add(logout);
+        bar.add(account);
+        mainFrame.setJMenuBar(bar);
+
+        mainFrame.add(tabs);
+        mainFrame.setVisible(true);
+    }
+
+    /** ======================== RETURN TO LOGIN ======================== **/
+    private static void logout() {
+        if (mainFrame != null) {
+            mainFrame.dispose();
+        }
+        loggedInUser = null;
+        if (loginView != null) {
+            loginView.setVisible(true);
+        }
+    }
+}
