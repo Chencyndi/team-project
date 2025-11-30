@@ -67,6 +67,9 @@ public class UseCase2Application {
                         // Switched to Browse Movies - refresh the cards
                         refreshBrowsePanel(browsePanel, movies, watchlistController, watchlistDAO);
                     }
+                    if (tabbedPane.getSelectedIndex() == 1) {
+                        watchlistController.viewWatchlist(currentUsername); // manual refresh only when tab reselected
+                    }
                 });
 
                 frame.add(tabbedPane);
