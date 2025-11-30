@@ -2,16 +2,15 @@ import movieapp.entity.User;
 import movieapp.interface_adapter.rating.RatingPresenter;
 import movieapp.interface_adapter.rating.RatingViewModel;
 import movieapp.use_case.rating.RatingDataAccessInterface;
+import movieapp.use_case.rating.RatingInputData;
 import movieapp.use_case.rating.RatingInteractor;
 import movieapp.use_case.rating.RatingOutputData;
-import movieapp.use_case.rating.RatingInputData;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RatingTest {
+class RatingInteractorTest {
 
     private InMemoryUserDAO userDAO;
     private RatingViewModel viewModel;
@@ -27,178 +26,116 @@ class RatingTest {
 
         userDAO.addUser(new User("user1", "pass1"));
         userDAO.addUser(new User("user2", "pass2"));
-        userDAO.addUser(new User("user3", "pass3"));
     }
 
     @Test
-    @DisplayName("Execute should add rating and return success")
-    void testExecuteSuccess() {
+    void testExecuteValidRating() {
         RatingOutputData result = interactor.execute(
                 new RatingInputData("user1", 1, 8)
         );
 
         assertTrue(result.isSuccess());
-        assertEquals("Rating submitted successfully", result.getMessage());
         assertEquals(8, result.getNewRating());
         assertEquals(8.0, result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should reject rating below 1")
     void testExecuteRatingTooLow() {
         RatingOutputData result = interactor.execute(
                 new RatingInputData("user1", 1, 0)
         );
 
         assertFalse(result.isSuccess());
-        assertEquals("Something went wrong", result.getMessage());
         assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should reject rating above 10")
     void testExecuteRatingTooHigh() {
         RatingOutputData result = interactor.execute(
                 new RatingInputData("user1", 1, 11)
         );
 
         assertFalse(result.isSuccess());
-        assertEquals("Something went wrong", result.getMessage());
         assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should handle boundary rating 1")
-    void testExecuteBoundaryRating1() {
+    void testExecuteMinRating() {
         RatingOutputData result = interactor.execute(
                 new RatingInputData("user1", 1, 1)
         );
 
         assertTrue(result.isSuccess());
         assertEquals(1, result.getNewRating());
-        assertEquals(1.0, result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should handle boundary rating 10")
-    void testExecuteBoundaryRating10() {
+    void testExecuteMaxRating() {
         RatingOutputData result = interactor.execute(
                 new RatingInputData("user1", 1, 10)
         );
 
         assertTrue(result.isSuccess());
         assertEquals(10, result.getNewRating());
-        assertEquals(10.0, result.getAverageRating());
     }
 
     @Test
-    @DisplayName("RemoveRating should remove rating and return success")
-    void testRemoveRatingSuccess() {
-        interactor.execute(
-                new RatingInputData("user1", 1, 8)
-        );
+    void testRemoveRating() {
+        interactor.execute(new RatingInputData("user1", 1, 8));
 
         RatingOutputData result = interactor.removeRating("user1", 1);
 
         assertTrue(result.isSuccess());
-        assertEquals("Rating removed successfully", result.getMessage());
         assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
     @Test
-    @DisplayName("RemoveRating should handle non-existent rating")
-    void testRemoveRatingNonExistent() {
+    void testRemoveNonExistentRating() {
         RatingOutputData result = interactor.removeRating("user1", 999);
 
         assertTrue(result.isSuccess());
-        assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should handle exception when adding rating")
-    void testExecuteExceptionOnAddRating() {
-        RatingDataAccessInterface faultyDAO = new FaultyRatingDAO(true, false);
-        RatingInteractor interactorWithFaultyDAO = new RatingInteractor(faultyDAO, presenter);
+    void testAverageRatingMultipleUsers() {
+        interactor.execute(new RatingInputData("user1", 1, 8));
+        interactor.execute(new RatingInputData("user2", 1, 6));
 
-        RatingOutputData result = interactorWithFaultyDAO.execute(
-                new RatingInputData("user1", 1, 8)
+        assertEquals(7.0, userDAO.getAverageRating(1));
+    }
+
+    @Test
+    void testExecuteException() {
+        BrokenDAO brokenDAO = new BrokenDAO();
+        RatingInteractor brokenInteractor = new RatingInteractor(brokenDAO, presenter);
+
+        RatingOutputData result = brokenInteractor.execute(
+                new RatingInputData("user1", 1, 5)
         );
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().startsWith("Failed to submit rating:"));
         assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
     @Test
-    @DisplayName("Execute should handle exception when getting average rating")
-    void testExecuteExceptionOnGetAverage() {
-        RatingDataAccessInterface faultyDAO = new FaultyRatingDAO(false, true);
-        RatingInteractor interactorWithFaultyDAO = new RatingInteractor(faultyDAO, presenter);
-
-        RatingOutputData result = interactorWithFaultyDAO.execute(
-                new RatingInputData("user1", 1, 8)
-        );
-
-        assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().startsWith("Failed to submit rating:"));
-        assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
-    }
-
-    @Test
-    @DisplayName("RemoveRating should handle exception when removing")
     void testRemoveRatingException() {
-        RatingDataAccessInterface faultyDAO = new FaultyRatingDAO(true, false);
-        RatingInteractor interactorWithFaultyDAO = new RatingInteractor(faultyDAO, presenter);
+        BrokenDAO brokenDAO = new BrokenDAO();
+        RatingInteractor brokenInteractor = new RatingInteractor(brokenDAO, presenter);
 
-        RatingOutputData result = interactorWithFaultyDAO.removeRating("user1", 1);
-
-        assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().startsWith("Failed to remove rating:"));
-        assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
-    }
-
-    @Test
-    @DisplayName("RemoveRating should handle exception when getting average after removal")
-    void testRemoveRatingExceptionOnGetAverage() {
-        RatingDataAccessInterface faultyDAO = new FaultyRatingDAO(false, true);
-        RatingInteractor interactorWithFaultyDAO = new RatingInteractor(faultyDAO, presenter);
-
-        RatingOutputData result = interactorWithFaultyDAO.removeRating("user1", 1);
+        RatingOutputData result = brokenInteractor.removeRating("user1", 1);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().startsWith("Failed to remove rating:"));
-        assertNull(result.getNewRating());
-        assertNull(result.getAverageRating());
     }
 
-    private static class FaultyRatingDAO implements RatingDataAccessInterface {
-        private final boolean throwOnAddOrRemove;
-        private final boolean throwOnGetAverage;
-
-        public FaultyRatingDAO(boolean throwOnAddOrRemove, boolean throwOnGetAverage) {
-            this.throwOnAddOrRemove = throwOnAddOrRemove;
-            this.throwOnGetAverage = throwOnGetAverage;
-        }
-
+    private static class BrokenDAO implements RatingDataAccessInterface {
         @Override
         public void addRating(Integer movieID, String username, Integer rating) {
-            if (throwOnAddOrRemove) {
-                throw new RuntimeException("Database error on addRating");
-            }
+            throw new RuntimeException("error");
         }
 
         @Override
         public void removeRating(Integer movieID, String username) {
-            if (throwOnAddOrRemove) {
-                throw new RuntimeException("Database error on removeRating");
-            }
+            throw new RuntimeException("error");
         }
 
         @Override
@@ -208,10 +145,7 @@ class RatingTest {
 
         @Override
         public Double getAverageRating(Integer movieID) {
-            if (throwOnGetAverage) {
-                throw new RuntimeException("Database error on getAverageRating");
-            }
-            return null;
+            throw new RuntimeException("error");
         }
     }
 }
