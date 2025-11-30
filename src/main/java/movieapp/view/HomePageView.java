@@ -217,7 +217,7 @@ public class HomePageView extends JPanel {
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
 
         // === LEFT: Movie Info (Use Case 6: Movie Details) ===
         JPanel infoPanel = new JPanel();
