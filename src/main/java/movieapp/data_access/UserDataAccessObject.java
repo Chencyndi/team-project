@@ -8,8 +8,6 @@ import movieapp.use_case.rating.RatingDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -160,6 +158,30 @@ public class UserDataAccessObject implements RatingDataAccessInterface, UserData
                 return;
             }
         }
+    }
+
+    @Override
+    public Double getAverageRating(Integer movieID) {
+        JSONArray jsonArray = readJSONFile();
+        double totalRating = 0;
+        int ratingCount = 0;
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject user = jsonArray.getJSONObject(i);
+            JSONObject ratings = user.getJSONObject("ratings");
+
+            if (ratings.has(movieID.toString())) {
+                totalRating += ratings.getInt(movieID.toString());
+                ratingCount++;
+            }
+        }
+
+        if (ratingCount == 0) {
+            return null;
+        }
+
+        double average = totalRating / ratingCount;
+        return Math.round(average * 10.0) / 10.0;
     }
 
     @Override

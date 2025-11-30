@@ -7,4 +7,6 @@ public interface RatingDataAccessInterface {
     void removeRating(Integer movieID, String username);
 
     Integer getMovieRating(String username, Integer movieID);
+
+    Double getAverageRating(Integer movieID);
 }

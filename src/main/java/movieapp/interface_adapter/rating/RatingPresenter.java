@@ -16,6 +16,13 @@ public class RatingPresenter implements RatingOutputBoundary {
         state.setSuccess(true);
         state.setMessage(outputData.getMessage());
         state.setCurrentRating(outputData.getNewRating());
+
+        if (outputData.getAverageRating() != null) {
+            state.setAverageRatingLabel(outputData.getAverageRating() + "/10");
+        } else {
+            state.setAverageRatingLabel("N/A");
+        }
+
         viewModel.firePropertyChange();
     }
 

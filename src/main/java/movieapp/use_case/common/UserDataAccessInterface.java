@@ -15,5 +15,4 @@ public interface UserDataAccessInterface {
     Integer getMovieRating(String username, Integer movieID);
     void addRating(Integer movieID, String username, Integer rating);
     void removeRating(Integer movieID, String username);
-
 }
