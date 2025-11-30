@@ -18,6 +18,7 @@ public class RatingView extends JPanel implements PropertyChangeListener {
     private final String movieTitle;
 
     private JLabel currentRatingLabel;
+    private JLabel averageRatingLabel;
     private JSlider ratingSlider;
     private JLabel sliderValueLabel;
     private JButton submitButton;
@@ -39,7 +40,7 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         this.setLayout(new BorderLayout(10, 10));
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(4, 1, 5, 5));
         infoPanel.setBorder(new TitledBorder("Movie Details"));
 
         JLabel userLabel = new JLabel("User: " + username);
@@ -50,9 +51,14 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         currentRatingLabel = new JLabel("Current Rating: Loading...");
         currentRatingLabel.setFont(currentRatingLabel.getFont().deriveFont(Font.BOLD, 14f));
 
+        averageRatingLabel = new JLabel("Average Rating: N/A");
+        averageRatingLabel.setFont(averageRatingLabel.getFont().deriveFont(Font.BOLD, 14f));
+        averageRatingLabel.setForeground(new Color(255, 140, 0));
+
         infoPanel.add(userLabel);
         infoPanel.add(movieLabel);
         infoPanel.add(currentRatingLabel);
+        infoPanel.add(averageRatingLabel);
 
         this.add(infoPanel, BorderLayout.NORTH);
 
@@ -121,10 +127,21 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         }
     }
 
+    private void updateAverageRatingDisplay(String averageRatingText) {
+        if (averageRatingText != null && !averageRatingText.equals("N/A")) {
+            averageRatingLabel.setText("Average Rating: ⭐ " + averageRatingText);
+            averageRatingLabel.setForeground(new Color(255, 140, 0));
+        } else {
+            averageRatingLabel.setText("Average Rating: N/A");
+            averageRatingLabel.setForeground(Color.GRAY);
+        }
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
             RatingState state = viewModel.getState();
+            updateAverageRatingDisplay(state.getAverageRatingLabel());
 
             if (state.getMessage() != null && !state.getMessage().isEmpty()) {
                 if (state.isSuccess()) {

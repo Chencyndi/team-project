@@ -13,7 +13,10 @@
     {
         "password": "abcd",
         "ratings": {},
-        "watchlist": [],
+        "watchlist": [
+            1033462,
+            967941
+        ],
         "username": "max"
     },
     {
@@ -27,65 +30,5 @@
         "ratings": {},
         "watchlist": [],
         "username": "testuser"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "max"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "Luke"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "bob"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "testuser"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "max"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "Luke"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "testuser"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "max"
-    },
-    {
-        "password": "password123",
-        "ratings": {},
-        "watchlist": [],
-        "username": "Luke"
-    },
-    {
-        "password": "1",
-        "ratings": {},
-        "watchlist": [],
-        "username": "f"
     }
 ]
