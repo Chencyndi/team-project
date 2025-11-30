@@ -3,11 +3,18 @@ package movieapp.view;
 import movieapp.data_access.CommentDataAccessObject;
 import movieapp.data_access.DatabaseWatchlistDAO;
 import movieapp.data_access.TMDBMovieAPIAccess;
+import movieapp.data_access.TMDBMovieRepository;
 import movieapp.entity.Comment;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.rating.RatingController;
+import movieapp.interface_adapter.search.MovieRepository;
+import movieapp.interface_adapter.search.SearchController;
+import movieapp.interface_adapter.search.SearchPresenter;
+import movieapp.interface_adapter.search.SearchViewModel;
 import movieapp.interface_adapter.watchlist.WatchlistController;
+import movieapp.use_case.search.SearchInputBoundary;
+import movieapp.use_case.search.SearchInteractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -150,10 +157,14 @@ public class HomePageView extends JPanel {
             displayMovies(currentMovies);
             return;
         }
+        MovieRepository movieRepository = new TMDBMovieRepository();
+        SearchViewModel searchViewModel = new SearchViewModel();
+        SearchPresenter searchPresenter = new SearchPresenter(searchViewModel);
+        SearchInputBoundary searchInteractor = new SearchInteractor(movieRepository, searchPresenter);
+        SearchController searchController = new SearchController(searchInteractor);
+        searchController.search(query);
 
-        List<Movie> filtered = currentMovies.stream()
-                .filter(m -> m.getTitle().toLowerCase().contains(query.toLowerCase()))
-                .toList();
+        List<Movie> filtered = searchViewModel.getMovies();
         displayMovies(filtered);
     }
 

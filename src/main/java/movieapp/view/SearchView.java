@@ -76,7 +76,7 @@ public class SearchView extends JFrame {
         searchController.search(query);
         
         if (searchViewModel.isSuccess()) {
-            displayMovies((searchViewModel.getMovies()));
+            displayMovies((searchViewModel.getMovieViewModels()));
         } else {
             JOptionPane.showMessageDialog(this, searchViewModel.getMessage());
         }
