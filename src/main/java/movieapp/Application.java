@@ -73,7 +73,7 @@ public class Application {
         }
 
         /** ---------- Watchlist System ----------- */
-        InMemoryWatchlistDAO watchlistDAO = new InMemoryWatchlistDAO();
+        DatabaseWatchlistDAO watchlistDAO = new DatabaseWatchlistDAO();
         watchlistDAO.setCurrentUsername(loggedInUser);
 
         WatchlistViewModel watchlistVM = new WatchlistViewModel();
