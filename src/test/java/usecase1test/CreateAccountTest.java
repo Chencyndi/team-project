@@ -1,9 +1,6 @@
 package usecase1test;
 
-import movieapp.data_access.InMemoryUserDataAccessObject;
 import movieapp.use_case.account.CreateAccountInputData;
-import movieapp.use_case.account.CreateAccountOutputBoundary;
-import movieapp.use_case.common.UserDataAccessInterface;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
