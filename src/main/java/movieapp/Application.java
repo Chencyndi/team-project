@@ -100,7 +100,7 @@ public class Application {
                 new ViewWatchlistInteractor(watchlistDAO, watchlistPresenter)
         );
 
-        /** ---------- Rating System (EXACTLY LIKE DEMO) ----------- */
+        /** ---------- Rating System ----------- */
         RatingViewModel ratingViewModel = new RatingViewModel();
         RatingPresenter ratingPresenter = new RatingPresenter(ratingViewModel);
         RatingInteractor ratingInteractor = new RatingInteractor(userDB, ratingPresenter);
@@ -114,11 +114,35 @@ public class Application {
                 new PostCommentInteractor(commentDB, userDB, commentPresenter)
         );
 
+        /** ---------- Login Objects for HomePageView ----------- */
+        LoginViewModel loginVM = new LoginViewModel();
+        LoginController loginController = new LoginController(
+                new LoginInteractor(userDB, new LoginPresenter(loginVM) {
+                    @Override
+                    public void presentSuccess(LoginOutputData data) {}
+                    @Override
+                    public void presentUserNotFound(String msg) {}
+                    @Override
+                    public void presentInvalidPassword(String msg) {}
+                    @Override
+                    public void presentValidationError(String msg) {}
+                })
+        );
+
         /** ---------- Home UI Frame ----------- */
         TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
         HomePageView homePage = new HomePageView(
-                movieAPI, watchlistController, watchlistDAO,
-                ratingController, commentController, commentDB, loggedInUser
+                movieAPI,
+                watchlistController,
+                watchlistDAO,
+                ratingController,
+                ratingViewModel,
+                commentController,
+                commentVM,
+                commentDB,
+                loginVM,
+                loginController,
+                loggedInUser
         );
 
         WatchlistView watchlistView = new WatchlistView(watchlistVM, watchlistController);
