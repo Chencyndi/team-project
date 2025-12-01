@@ -1,0 +1,132 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "Interface Adapters" {
+    class FetchMoviesController {
+        - inputBoundary: FetchMoviesInputBoundary
+        + FetchMoviesController(inputBoundary: FetchMoviesInputBoundary)
+        + fetchPopular(limit: int)
+        + fetchRecent(limit: int)
+    }
+
+    class FetchMoviesPresenter {
+        - viewModel: MovieListViewModel
+        + FetchMoviesPresenter(viewModel: MovieListViewModel)
+        + present(output: FetchMoviesOutputData)
+    }
+
+    class MovieListViewModel {
+        - movies: List<Movie>
+        - currentCategory: MovieCategory
+        + getMovies(): List<Movie>
+        + setMovies(movies: List<Movie>)
+        + getCurrentCategory(): MovieCategory
+        + setCurrentCategory(cat: MovieCategory)
+    }
+
+    class HomePageView {
+        - controller: FetchMoviesController
+        - viewModel: MovieListViewModel
+        + showMovies()
+        + onPopularClicked()
+        + onRecentClicked()
+    }
+}
+
+package "Application Business Rules" {
+    interface FetchMoviesInputBoundary {
+        + execute(data: FetchMoviesInputData)
+    }
+
+    interface FetchMoviesOutputBoundary {
+        + present(output: FetchMoviesOutputData)
+    }
+
+    class FetchMoviesInputData {
+        - category: MovieCategory
+        - limit: int
+        + getCategory(): MovieCategory
+        + getLimit(): int
+    }
+
+    class FetchMoviesOutputData {
+        - movies: List<Movie>
+        - category: MovieCategory
+        + getMovies(): List<Movie>
+        + getCategory(): MovieCategory
+    }
+
+    class FetchMoviesInteractor {
+        - dataSource: MovieDataSource
+        - outputBoundary: FetchMoviesOutputBoundary
+        + FetchMoviesInteractor(ds: MovieDataSource,
+                                ob: FetchMoviesOutputBoundary)
+        + execute(data: FetchMoviesInputData)
+    }
+}
+
+package "Enterprise Business Rules" {
+    class Movie {
+        - id: int
+        - title: String
+        - overview: String
+        - releaseDate: String
+        - posterUrl: String
+        - voteAverage: double
+        - popularity: double
+        - voteCount: int
+    }
+
+    enum MovieCategory {
+        POPULAR
+        RECENT
+    }
+}
+
+package "Frameworks & Drivers" {
+    interface MovieDataSource {
+        + fetchPopularMovies(limit: int): List<Movie>
+        + fetchRecentMovies(limit: int): List<Movie>
+    }
+
+    class TMDBMovieAPIAccess {
+        + fetchPopularMovies(limit: int): List<Movie>
+        + fetchRecentMovies(limit: int): List<Movie>
+    }
+
+    TMDBMovieAPIAccess ..|> MovieDataSource
+}
+
+' ===========================
+' RELATIONSHIPS ONLY
+' ===========================
+
+' Controller -> Input data -> Input boundary
+HomePageView --> FetchMoviesController
+HomePageView --> MovieListViewModel
+
+FetchMoviesController --> FetchMoviesInputData
+FetchMoviesController --> FetchMoviesInputBoundary
+
+' Interactor and boundaries
+FetchMoviesInteractor ..|> FetchMoviesInputBoundary
+FetchMoviesInteractor --> FetchMoviesInputData
+FetchMoviesInteractor --> MovieDataSource
+FetchMoviesInteractor --> FetchMoviesOutputBoundary
+FetchMoviesInteractor --> FetchMoviesOutputData
+FetchMoviesInteractor --> Movie
+
+' Output side: presenter & view model
+FetchMoviesPresenter ..|> FetchMoviesOutputBoundary
+FetchMoviesPresenter --> FetchMoviesOutputData
+FetchMoviesPresenter --> MovieListViewModel
+
+' Data source returns entities
+MovieDataSource ..> Movie
+FetchMoviesInputData --> MovieCategory
+FetchMoviesOutputData --> Movie
+FetchMoviesOutputData --> MovieCategory
+
+@enduml

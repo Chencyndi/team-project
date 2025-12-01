@@ -37,5 +37,23 @@
         "ratings": {},
         "watchlist": [],
         "username": "user"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "testuser"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "max"
+    },
+    {
+        "password": "password123",
+        "ratings": {},
+        "watchlist": [],
+        "username": "Luke"
     }
 ]
