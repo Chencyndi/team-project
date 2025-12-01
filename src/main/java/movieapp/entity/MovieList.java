@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain entity representing a named list of movies.
+ * Domain entity representing a list of movies.
  */
 public class MovieList {
 
@@ -78,7 +78,6 @@ public class MovieList {
     }
 
     public String getCurrentSort() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getCurrentSort'");
     }
 }

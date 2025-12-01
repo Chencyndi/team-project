@@ -1,11 +1,12 @@
 package movieapp.entity;
 
-import org.json.JSONObject;
-
 import java.util.List;
 
+/**
+ * Domain entity representing a Movie.
+ */
 public class Movie {
-
+    
     private final int id;
     private final String title;
     private final String overview;
