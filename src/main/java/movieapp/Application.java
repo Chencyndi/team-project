@@ -1,18 +1,38 @@
 package movieapp;
 
-import movieapp.data_access.*;
-import movieapp.interface_adapter.account.*;
-import movieapp.interface_adapter.login.*;
-import movieapp.interface_adapter.rating.*;
-import movieapp.interface_adapter.comment.*;
-import movieapp.interface_adapter.search.SearchController;
-import movieapp.interface_adapter.watchlist.*;
-import movieapp.use_case.login.*;
-import movieapp.use_case.account.*;
-import movieapp.use_case.watchlist.*;
-import movieapp.use_case.rating.*;
-import movieapp.use_case.comment.*;
-import movieapp.view.*;
+import movieapp.data_access.CommentDataAccessObject;
+import movieapp.data_access.DatabaseWatchlistDAO;
+import movieapp.data_access.TMDBMovieAPIAccess;
+import movieapp.data_access.UserDataAccessObject;
+import movieapp.interface_adapter.account.CreateAccountController;
+import movieapp.interface_adapter.account.CreateAccountPresenter;
+import movieapp.interface_adapter.account.CreateAccountViewModel;
+import movieapp.interface_adapter.comment.PostCommentController;
+import movieapp.interface_adapter.comment.PostCommentPresenter;
+import movieapp.interface_adapter.comment.PostCommentViewModel;
+import movieapp.interface_adapter.login.LoginController;
+import movieapp.interface_adapter.login.LoginPresenter;
+import movieapp.interface_adapter.login.LoginViewModel;
+import movieapp.interface_adapter.rating.RatingController;
+import movieapp.interface_adapter.rating.RatingPresenter;
+import movieapp.interface_adapter.rating.RatingViewModel;
+import movieapp.interface_adapter.watchlist.WatchlistController;
+import movieapp.interface_adapter.watchlist.WatchlistPresenter;
+import movieapp.interface_adapter.watchlist.WatchlistViewModel;
+import movieapp.use_case.account.CreateAccountInputBoundary;
+import movieapp.use_case.account.CreateAccountInteractor;
+import movieapp.use_case.comment.PostCommentInteractor;
+import movieapp.use_case.login.LoginInputBoundary;
+import movieapp.use_case.login.LoginInteractor;
+import movieapp.use_case.login.LoginOutputData;
+import movieapp.use_case.rating.RatingInteractor;
+import movieapp.use_case.watchlist.AddToWatchlistInteractor;
+import movieapp.use_case.watchlist.RemoveFromWatchlistInteractor;
+import movieapp.use_case.watchlist.ViewWatchlistInteractor;
+import movieapp.view.CreateAccountView;
+import movieapp.view.HomePageView;
+import movieapp.view.LoginView;
+import movieapp.view.WatchlistView;
 
 import javax.swing.*;
 
@@ -23,12 +43,16 @@ public class Application {
     private static String loggedInUser;
     private static UserDataAccessObject userDB;
 
-    /** ========================= START PROGRAM ========================== **/
+    /**
+     * ========================= START PROGRAM ==========================
+     **/
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Application::launchLoginScreen);
     }
 
-    /** ========================= SHOW LOGIN FIRST ======================= **/
+    /**
+     * ========================= SHOW LOGIN FIRST =======================
+     **/
     private static void launchLoginScreen() {
         userDB = new UserDataAccessObject();
 
@@ -61,7 +85,9 @@ public class Application {
     }
 
 
-    /** ====================== HOMEPAGE AFTER LOGIN ====================== **/
+    /**
+     * ====================== HOMEPAGE AFTER LOGIN ======================
+     **/
     private static void launchHomePage() {
         if (loginView != null) {
             loginView.setVisible(false);
@@ -99,21 +125,26 @@ public class Application {
         LoginController loginController = new LoginController(
                 new LoginInteractor(userDB, new LoginPresenter(loginVM) {
                     @Override
-                    public void presentSuccess(LoginOutputData data) {}
+                    public void presentSuccess(LoginOutputData data) {
+                    }
+
                     @Override
-                    public void presentUserNotFound(String msg) {}
+                    public void presentUserNotFound(String msg) {
+                    }
+
                     @Override
-                    public void presentInvalidPassword(String msg) {}
+                    public void presentInvalidPassword(String msg) {
+                    }
+
                     @Override
-                    public void presentValidationError(String msg) {}
+                    public void presentValidationError(String msg) {
+                    }
                 })
         );
 
         /** ---------- Home UI Frame ----------- */
         TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
         HomePageView homePage = new HomePageView(
-                movieAPI, watchlistController, watchlistDAO,
-                ratingController, commentController, commentDB, loggedInUser);
                 movieAPI,
                 watchlistController,
                 watchlistDAO,
@@ -124,8 +155,7 @@ public class Application {
                 commentDB,
                 loginVM,
                 loginController,
-                loggedInUser
-        );
+                loggedInUser);
 
         WatchlistView watchlistView = new WatchlistView(watchlistVM, watchlistController);
         watchlistView.setCurrentUsername(loggedInUser);
@@ -162,7 +192,9 @@ public class Application {
         mainFrame.setVisible(true);
     }
 
-    /** ======================== RETURN TO LOGIN ======================== **/
+    /**
+     * ======================== RETURN TO LOGIN ========================
+     **/
     private static void logout() {
         if (mainFrame != null) {
             mainFrame.dispose();
