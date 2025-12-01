@@ -1,7 +1,5 @@
 package movieapp.entity;
 
-import org.json.JSONObject;
-
 import java.util.List;
 
 public class Movie {

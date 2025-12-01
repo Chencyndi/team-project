@@ -2,7 +2,6 @@ package movieapp.interface_adapter.search;
 
 import movieapp.use_case.search.SearchInputBoundary;
 import movieapp.use_case.search.SearchInputData;
-import movieapp.use_case.search.SearchOutputData;
 
 public class SearchController {
     private final SearchInputBoundary searchUseCase;
