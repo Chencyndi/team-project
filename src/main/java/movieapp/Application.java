@@ -5,6 +5,7 @@ import movieapp.interface_adapter.account.*;
 import movieapp.interface_adapter.login.*;
 import movieapp.interface_adapter.rating.*;
 import movieapp.interface_adapter.comment.*;
+import movieapp.interface_adapter.search.SearchController;
 import movieapp.interface_adapter.watchlist.*;
 import movieapp.use_case.login.*;
 import movieapp.use_case.account.*;
@@ -111,6 +112,8 @@ public class Application {
         /** ---------- Home UI Frame ----------- */
         TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
         HomePageView homePage = new HomePageView(
+                movieAPI, watchlistController, watchlistDAO,
+                ratingController, commentController, commentDB, loggedInUser);
                 movieAPI,
                 watchlistController,
                 watchlistDAO,

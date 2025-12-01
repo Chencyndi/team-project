@@ -31,7 +31,8 @@ public class SearchPresenter implements SearchOutputBoundary {
 
         viewModel.setSuccess(true);
         viewModel.setMessage(outputData.getMessage());
-        viewModel.setMovies(movieViewModels);
+        viewModel.setMovieViewModels(movieViewModels);
+        viewModel.setMovies(outputData.getMovies());
     }
 
     @Override
