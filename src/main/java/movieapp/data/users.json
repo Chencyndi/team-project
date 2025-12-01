@@ -31,5 +31,11 @@
         "ratings": {},
         "watchlist": [],
         "username": "testuser"
+    },
+    {
+        "password": "a",
+        "ratings": {},
+        "watchlist": [],
+        "username": "a"
     }
 ]
