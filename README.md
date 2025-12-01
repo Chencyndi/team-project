@@ -46,14 +46,14 @@ The project follows a layered / clean architecture style with clear separation o
 ## Screenshots
 
 - Login screen
-  - ![app0.png](docs/screenshots/app0.png)
-- Home / movie list view
-  - ![app1.png](docs/screenshots/app1.png)
+  - ![login.png](docs/screenshots/login.png)
+- Homepage / searching / sorting
+  - ![homepage.png](docs/screenshots/homepage.png)
+  - ![searching.png](docs/screenshots/searching.png)
+  - ![sorting(by date).png](docs/screenshots/sorting%28by%20date%29.png)
 - Watchlist view
-  - ![app2.png](docs/screenshots/app2.png)
-- Movie details
-  - ![app3.png](docs/screenshots/app3.png)
+  - ![watchlist.png](docs/screenshots/watchlist.png)
 - Comment / rating views
-  - ![app4.png](docs/screenshots/app4.png)
-  - ![app5.png](docs/screenshots/app5.png)
+  - ![comments.png](docs/screenshots/comments.png)
+  - ![rating.png](docs/screenshots/rating.png)
 
