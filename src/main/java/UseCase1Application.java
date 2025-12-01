@@ -1,16 +1,16 @@
 // Application.java
 
 import movieapp.data_access.UserDataAccessObject;
-import movieapp.interface_adapter.account.CreateAccountViewModel;
+import movieapp.interface_adapter.createAccount.CreateAccountViewModel;
 import movieapp.interface_adapter.login.LoginController;
 import movieapp.interface_adapter.login.LoginPresenter;
-import movieapp.interface_adapter.account.CreateAccountController;
-import movieapp.interface_adapter.account.CreateAccountPresenter;
+import movieapp.interface_adapter.createAccount.CreateAccountController;
+import movieapp.interface_adapter.createAccount.CreateAccountPresenter;
 import movieapp.interface_adapter.login.LoginViewModel;
 import movieapp.use_case.login.LoginInputBoundary;
 import movieapp.use_case.login.LoginInteractor;
-import movieapp.use_case.account.CreateAccountInputBoundary;
-import movieapp.use_case.account.CreateAccountInteractor;
+import movieapp.use_case.createAccount.CreateAccountInputBoundary;
+import movieapp.use_case.createAccount.CreateAccountInteractor;
 import movieapp.view.CreateAccountView;
 import movieapp.view.LoginView;
 import movieapp.use_case.common.UserDataAccessInterface;

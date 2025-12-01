@@ -1,8 +1,7 @@
-package movieapp.interface_adapter.account;
+package movieapp.interface_adapter.createAccount;
 
-import movieapp.use_case.account.CreateAccountOutputBoundary;
-import movieapp.use_case.account.CreateAccountOutputData;
-import movieapp.view.CreateAccountView;
+import movieapp.use_case.createAccount.CreateAccountOutputBoundary;
+import movieapp.use_case.createAccount.CreateAccountOutputData;
 
 public class CreateAccountPresenter implements CreateAccountOutputBoundary {
 

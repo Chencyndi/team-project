@@ -1,4 +1,4 @@
-package movieapp.interface_adapter.account;
+package movieapp.interface_adapter.createAccount;
 
 public class CreateAccountViewModel {
 

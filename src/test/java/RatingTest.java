@@ -1,3 +1,4 @@
+import data_access.InMemoryUserDAO;
 import movieapp.entity.User;
 import movieapp.interface_adapter.rating.RatingPresenter;
 import movieapp.interface_adapter.rating.RatingViewModel;

@@ -1,3 +1,5 @@
+package data_access;
+
 import movieapp.entity.Movie;
 import movieapp.entity.User;
 import movieapp.entity.Watchlist;

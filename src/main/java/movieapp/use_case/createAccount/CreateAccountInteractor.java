@@ -1,5 +1,5 @@
 // CreateAccountInteractor.java
-package movieapp.use_case.account;
+package movieapp.use_case.createAccount;
 
 import movieapp.entity.User;
 import movieapp.use_case.common.UserDataAccessInterface;

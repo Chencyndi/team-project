@@ -1,5 +1,5 @@
 // CreateAccountOutputBoundary.java
-package movieapp.use_case.account;
+package movieapp.use_case.createAccount;
 
 public interface CreateAccountOutputBoundary {
     void presentSuccess(CreateAccountOutputData outputData);
