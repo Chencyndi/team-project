@@ -13,7 +13,7 @@ public class CreateAccountFailView extends JFrame {
     }
     
     private void initializeUI(String errorMessage) {
-        setTitle("Password Error");
+        setTitle("Fail");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(300, 150);
         setLocationRelativeTo(null);
