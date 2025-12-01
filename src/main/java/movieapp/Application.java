@@ -112,8 +112,6 @@ public class Application {
         /** ---------- Home UI Frame ----------- */
         TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
         HomePageView homePage = new HomePageView(
-                movieAPI, watchlistController, watchlistDAO,
-                ratingController, commentController, commentDB, loggedInUser);
                 movieAPI,
                 watchlistController,
                 watchlistDAO,
