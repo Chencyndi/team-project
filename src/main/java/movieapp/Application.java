@@ -7,6 +7,7 @@ import movieapp.interface_adapter.rating.*;
 import movieapp.interface_adapter.comment.*;
 import movieapp.interface_adapter.watchlist.*;
 import movieapp.use_case.login.*;
+import movieapp.use_case.movielist.MovieDataSource;
 import movieapp.use_case.createAccount.*;
 import movieapp.use_case.watchlist.*;
 import movieapp.use_case.rating.*;
@@ -109,9 +110,9 @@ public class Application {
         );
 
         /** ---------- Home UI Frame ----------- */
-        TMDBMovieAPIAccess movieAPI = new TMDBMovieAPIAccess();
+        MovieDataSource movieDataSource = new TMDBMovieAPIAccess();
         HomePageView homePage = new HomePageView(
-                movieAPI,
+                movieDataSource,
                 watchlistController,
                 watchlistDAO,
                 ratingController,

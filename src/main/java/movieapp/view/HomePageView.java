@@ -2,7 +2,6 @@ package movieapp.view;
 
 import movieapp.data_access.CommentDataAccessObject;
 import movieapp.data_access.DatabaseWatchlistDAO;
-import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.data_access.TMDBMovieRepository;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
@@ -18,11 +17,13 @@ import movieapp.interface_adapter.rating.RatingViewModel;
 import movieapp.interface_adapter.watchlist.WatchlistController;
 import movieapp.use_case.search.SearchInputBoundary;
 import movieapp.use_case.search.SearchInteractor;
+import movieapp.use_case.movielist.MovieDataSource;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Supplier;
+
 
 /**
  * Complete HomePage integrating all 6 use cases:
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
  */
 public class HomePageView extends JPanel {
 
-    private final TMDBMovieAPIAccess movieAPI;
+    private final MovieDataSource movieDataSource;
     private final WatchlistController watchlistController;
     private final DatabaseWatchlistDAO watchlistDAO;
     private final RatingController ratingController;
@@ -54,7 +55,7 @@ public class HomePageView extends JPanel {
     private final JComboBox<String> sortComboBox;
     private final JComboBox<String> filterComboBox;
 
-    public HomePageView(TMDBMovieAPIAccess movieAPI,
+    public HomePageView(MovieDataSource movieDataSource,
                         WatchlistController watchlistController,
                         DatabaseWatchlistDAO watchlistDAO,
                         RatingController ratingController,
@@ -65,7 +66,7 @@ public class HomePageView extends JPanel {
                         LoginViewModel loginViewModel,
                         LoginController loginController,
                         String username) {
-        this.movieAPI = movieAPI;
+        this.movieDataSource = movieDataSource;
         this.watchlistController = watchlistController;
         this.watchlistDAO = watchlistDAO;
         this.ratingController = ratingController;
@@ -167,8 +168,9 @@ public class HomePageView extends JPanel {
         SwingWorker<List<Movie>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Movie> doInBackground() throws Exception {
-                return movieAPI.fetchPopularMovies(100);
+                return movieDataSource.fetchPopularMovies(100);
             }
+
 
             @Override
             protected void done() {
@@ -206,7 +208,7 @@ public class HomePageView extends JPanel {
             @Override
             protected List<Movie> doInBackground() throws Exception {
                 // Fetch the most recent 100 movies from the API
-                return movieAPI.fetchRecentMovies(100);
+                return movieDataSource.fetchRecentMovies(100);
             }
 
             @Override
