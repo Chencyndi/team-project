@@ -43,27 +43,6 @@ public class Application {
                 loggedInUser = data.getUsername();
                 launchHomePage();
             }
-
-            @Override
-            public void presentUserNotFound(String msg) {
-                loginVM.setSuccess(false);
-                loginVM.setMessage(msg);
-                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            @Override
-            public void presentInvalidPassword(String msg) {
-                loginVM.setSuccess(false);
-                loginVM.setMessage(msg);
-                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            @Override
-            public void presentValidationError(String msg) {
-                loginVM.setSuccess(false);
-                loginVM.setMessage(msg);
-                JOptionPane.showMessageDialog(null, msg, "Login Error", JOptionPane.ERROR_MESSAGE);
-            }
         };
 
         CreateAccountPresenter createPresenter = new CreateAccountPresenter(createAccountVM);
