@@ -4,7 +4,6 @@ import movieapp.data_access.CommentDataAccessObject;
 import movieapp.data_access.DatabaseWatchlistDAO;
 import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.data_access.TMDBMovieRepository;
-import movieapp.entity.Comment;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
