@@ -1,13 +1,13 @@
 package movieapp;
 
 import movieapp.data_access.*;
-import movieapp.interface_adapter.account.*;
+import movieapp.interface_adapter.createAccount.*;
 import movieapp.interface_adapter.login.*;
 import movieapp.interface_adapter.rating.*;
 import movieapp.interface_adapter.comment.*;
 import movieapp.interface_adapter.watchlist.*;
 import movieapp.use_case.login.*;
-import movieapp.use_case.account.*;
+import movieapp.use_case.createAccount.*;
 import movieapp.use_case.watchlist.*;
 import movieapp.use_case.rating.*;
 import movieapp.use_case.comment.*;

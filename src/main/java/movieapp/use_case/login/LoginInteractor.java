@@ -38,4 +38,5 @@ public class LoginInteractor implements LoginInputBoundary {
             outputBoundary.presentValidationError(e.getMessage());
         }
     }
+
 }

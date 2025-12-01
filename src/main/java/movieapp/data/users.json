@@ -33,9 +33,9 @@
         "username": "testuser"
     },
     {
-        "password": "a",
+        "password": "1",
         "ratings": {},
-        "watchlist": [1084242],
-        "username": "a"
+        "watchlist": [],
+        "username": "user"
     }
 ]

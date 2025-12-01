@@ -1,3 +1,4 @@
+package data_access;
 import movieapp.entity.Comment;
 import movieapp.entity.User;
 import movieapp.use_case.comment.CommentDataAccessInterface;

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TMDBMovieRepository implements MovieRepository {
+
     private final String apiKey = "cb14c2564a324df140f3ebe21f348f8f";
     
     @Override
@@ -52,6 +53,10 @@ public class TMDBMovieRepository implements MovieRepository {
         }
         
         return movies;
+    }
+    @Override
+    public void addMovie(Movie movie) {
+        return;
     }
     
     private Movie createMovieFromJSON(JSONObject movieData) {

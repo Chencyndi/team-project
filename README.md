@@ -1,13 +1,59 @@
-# Team Project
+## Movies App – TUT0301-03
 
-Please keep this up-to-date with information about your project throughout the term.
+This repository contains a Java desktop application that allows users to explore movies, 
+manage a personal watchlist, rate movies, and leave comments.  
+The application is built with Java Swing and integrates with the TMDB (The Movie Database) API
+to fetch real-time movie data.
 
-The readme should include information such as:
-- a summary of what your application is all about
-- a list of the user stories, along with who is responsible for each one
-- information about the API(s) that your project uses 
-- screenshots or animations demonstrating current functionality
+## Features
 
-By keeping this README up-to-date,
-your team will find it easier to prepare for the final presentation
-at the end of the term.
+- **User Accounts**
+  - Create a new account
+  - Log in with username and password
+  - Stay logged in while using the main tabbed interface
+
+- **Watchlist**
+  - Add movies to a personal watchlist
+  - Remove movies from the watchlist
+  - View your watchlist in a dedicated “My Watchlist” tab
+
+- **Ratings**
+  - Rate movies and update your rating
+  - See average rating for a movie
+
+- **Comments**
+  - Post comments for a specific movie
+  - View comments related to a movie
+
+- **Movie Browsing**
+  - View top popular and most recent movies on the home page
+  - Search for movies by keyword
+  - Open a detailed movie view with description and rating
+
+- **Searching for a Movie**
+  - Enter keywords to search for movies
+
+## Architecture Overview
+
+The project follows a layered / clean architecture style with clear separation of concerns:
+
+- `entity` – Core business entities such as `User`, `Movie`, `Watchlist`, `Comment`
+- `use_case` – Application use cases (login, create account, search, watchlist, rating, comments, etc.)
+- `interface_adapter` – Controllers, presenters, and view models that adapt use cases to the UI
+- `data_access` – Data access layer for users, comments, watchlists, and TMDB API access
+- `view` – Swing UI components (login screen, home page, movie list, watchlist, comment views, etc.)
+
+## Screenshots
+
+- Login screen
+  - ![app0.png](docs/screenshots/app0.png)
+- Home / movie list view
+  - ![app1.png](docs/screenshots/app1.png)
+- Watchlist view
+  - ![app2.png](docs/screenshots/app2.png)
+- Movie details
+  - ![app3.png](docs/screenshots/app3.png)
+- Comment / rating views
+  - ![app4.png](docs/screenshots/app4.png)
+  - ![app5.png](docs/screenshots/app5.png)
+

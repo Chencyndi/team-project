@@ -1,7 +1,7 @@
-package movieapp.interface_adapter.account;
+package movieapp.interface_adapter.createAccount;
 
-import movieapp.use_case.account.CreateAccountInputBoundary;
-import movieapp.use_case.account.CreateAccountInputData;
+import movieapp.use_case.createAccount.CreateAccountInputBoundary;
+import movieapp.use_case.createAccount.CreateAccountInputData;
 
 public class CreateAccountController {
     private final CreateAccountInputBoundary createAccountUseCase;

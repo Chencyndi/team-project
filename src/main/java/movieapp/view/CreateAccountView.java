@@ -1,8 +1,8 @@
 // CreateAccountView.java
 package movieapp.view;
 
-import movieapp.interface_adapter.account.CreateAccountController;
-import movieapp.interface_adapter.account.CreateAccountViewModel;
+import movieapp.interface_adapter.createAccount.CreateAccountController;
+import movieapp.interface_adapter.createAccount.CreateAccountViewModel;
 
 import javax.swing.*;
 import java.awt.*;

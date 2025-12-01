@@ -1,3 +1,5 @@
+package data_access;
+
 import movieapp.entity.Movie;
 import movieapp.entity.Watchlist;
 import movieapp.use_case.watchlist.WatchlistDataAccessInterface;

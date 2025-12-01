@@ -1,9 +1,9 @@
 // LoginView.java
 package movieapp.view;
 
-import movieapp.interface_adapter.account.CreateAccountViewModel;
+import movieapp.interface_adapter.createAccount.CreateAccountViewModel;
 import movieapp.interface_adapter.login.LoginController;
-import movieapp.interface_adapter.account.CreateAccountController;
+import movieapp.interface_adapter.createAccount.CreateAccountController;
 import movieapp.interface_adapter.login.LoginViewModel;
 
 import javax.swing.*;

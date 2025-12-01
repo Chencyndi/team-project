@@ -1,5 +1,5 @@
 // CreateAccountInputData.java
-package movieapp.use_case.account;
+package movieapp.use_case.createAccount;
 
 public class CreateAccountInputData {
     private final String username;
