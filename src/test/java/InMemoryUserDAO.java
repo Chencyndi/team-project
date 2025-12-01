@@ -78,7 +78,23 @@ public class InMemoryUserDAO implements UserDataAccessInterface, RatingDataAcces
             userRatings.get(username).remove(movieID);
         }
     }
+    @Override
+    public Double getAverageRating(Integer movieID) {
+        double totalRating = 0;
+        int count = 0;
+        for (Map<Integer, Integer> ratings : userRatings.values()) {
+            if (ratings.containsKey(movieID)) {
+                totalRating += ratings.get(movieID);
+                count++;
+            }
+        }
+        if (count == 0) {
+            return null;
+        }
 
+        double average = totalRating / count;
+        return Math.round(average * 10.0) / 10.0;
+    }
     public void clear() {
         users.clear();
         userRatings.clear();
