@@ -95,19 +95,31 @@ public class HomePageView extends JPanel {
         // Search and filter panel
         JPanel searchFilterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
 
-        // Search (Use Case 5)
+        
         searchField = new JTextField(20);
         searchField.setToolTipText("Search movies by title");
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> searchMovies());
 
-        // Sort (Use Case 5)
+        // Fetch Popular Movies (Use Case 5)
+        JButton popularButton = new JButton("Popular Movies");
+        popularButton.addActionListener(e -> loadPopularMovies());
+
+        // Fetch Recent Movies (Use Case 5)
+        JButton recentButton = new JButton("Recent Releases");
+        recentButton.addActionListener(e -> loadRecentMovies());
+
+        // Sort options (Use Case 5)
         sortComboBox = new JComboBox<>(new String[]{
-                "Most Popular", "Highest Rated", "Most Recent", "Title A-Z"
+            "Alphabetical (A→Z)",
+            "Alphabetical (Z→A)",
+            "Average Rating (High→Low)",
+            "Average Rating (Low→High)",
+            "Number of Ratings (High→Low)",
+            "Number of Ratings (Low→High)"
         });
         sortComboBox.addActionListener(e -> sortMovies());
 
-        // Filter (Use Case 5)
         filterComboBox = new JComboBox<>(new String[]{
                 "All Movies", "Action", "Comedy", "Drama", "Horror", "Sci-Fi"
         });
@@ -120,8 +132,11 @@ public class HomePageView extends JPanel {
         searchFilterPanel.add(new JLabel("Search:"));
         searchFilterPanel.add(searchField);
         searchFilterPanel.add(searchButton);
+        searchFilterPanel.add(popularButton);
+        searchFilterPanel.add(recentButton);
         searchFilterPanel.add(new JLabel("Sort:"));
         searchFilterPanel.add(sortComboBox);
+
         searchFilterPanel.add(new JLabel("Filter:"));
         searchFilterPanel.add(filterComboBox);
         searchFilterPanel.add(refreshButton);
@@ -168,6 +183,49 @@ public class HomePageView extends JPanel {
         worker.execute();
     }
 
+    /**
+     * Loads popular movies by default.
+     */
+    private void loadPopularMovies() {
+        loadMovies();
+    }
+
+    /**
+     * Loads recently released movies using a background task to avoid blocking the UI.
+     * Displays a temporary loading indicator while fetching data and then updates the UI.
+     */
+    private void loadRecentMovies() {
+        // Clear the movie panel and show a loading indicator
+        movieListPanel.removeAll();
+        movieListPanel.add(createLoadingLabel());
+        movieListPanel.revalidate();
+        movieListPanel.repaint();
+
+        // Perform the API call in a background thread to keep the UI responsive
+        SwingWorker<List<Movie>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected List<Movie> doInBackground() throws Exception {
+                // Fetch the most recent 100 movies from the API
+                return movieAPI.fetchRecentMovies(100);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    // Retrieve the fetched movie list and display it
+                    currentMovies = get();
+                    displayMovies(currentMovies);
+                } catch (Exception e) {
+                    // Show an error message if something goes wrong
+                    showError("Failed to load recent movies: " + e.getMessage());
+                }
+            }
+        };
+
+        // Start the background task
+        worker.execute();
+    }
+
     private void searchMovies() {
         String query = searchField.getText().trim();
         if (query.isEmpty()) {
@@ -185,24 +243,61 @@ public class HomePageView extends JPanel {
         displayMovies(filtered);
     }
 
+    /**
+     * Sorts the current list of movies based on the option selected in the combo box
+     * and updates the UI with the sorted results.
+     */
     private void sortMovies() {
+        // Exit early if there are no movies to sort
         if (currentMovies == null) return;
 
-        String sortOption = (String) sortComboBox.getSelectedItem();
-        List<Movie> sorted = switch (sortOption) {
-            case "Highest Rated" -> currentMovies.stream()
-                    .sorted((m1, m2) -> Double.compare(m2.getVoteAverage(), m1.getVoteAverage()))
-                    .toList();
-            case "Most Recent" -> currentMovies.stream()
-                    .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
-                    .toList();
-            case "Title A-Z" -> currentMovies.stream()
-                    .sorted((m1, m2) -> m1.getTitle().compareTo(m2.getTitle()))
-                    .toList();
-            default -> currentMovies.stream()
-                    .sorted((m1, m2) -> Double.compare(m2.getPopularity(), m1.getPopularity()))
-                    .toList();
+        // Retrieve the selected sorting option from the combo box
+        String option = (String) sortComboBox.getSelectedItem();
+
+        // Determine sorting logic based on the selected option using a switch expression
+        List<Movie> sorted = switch (option) {
+
+            // Sort titles alphabetically A→Z (case-insensitive)
+            case "Alphabetical (A→Z)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
+                            .toList();
+
+            // Sort titles alphabetically Z→A (case-insensitive)
+            case "Alphabetical (Z→A)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> b.getTitle().compareToIgnoreCase(a.getTitle()))
+                            .toList();
+
+            // Sort movies by average rating, highest first
+            case "Average Rating (High→Low)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> Double.compare(b.getVoteAverage(), a.getVoteAverage()))
+                            .toList();
+
+            // Sort movies by average rating, lowest first
+            case "Average Rating (Low→High)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> Double.compare(a.getVoteAverage(), b.getVoteAverage()))
+                            .toList();
+
+            // Sort by total number of ratings, highest first
+            case "Number of Ratings (High→Low)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> Integer.compare(b.getVoteCount(), a.getVoteCount()))
+                            .toList();
+
+            // Sort by total number of ratings, lowest first
+            case "Number of Ratings (Low→High)" ->
+                    currentMovies.stream()
+                            .sorted((a, b) -> Integer.compare(a.getVoteCount(), b.getVoteCount()))
+                            .toList();
+
+            // If no matching option found, keep original list unsorted
+            default -> currentMovies;
         };
+
+        // Update the UI to display the sorted list of movies
         displayMovies(sorted);
     }
 

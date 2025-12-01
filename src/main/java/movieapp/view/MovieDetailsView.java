@@ -1,7 +1,6 @@
 // MovieDetailsView.java
 package movieapp.view;
 
-import movieapp.entity.Movie;
 import movieapp.interface_adapter.search.MovieViewModel;
 
 import javax.swing.*;
