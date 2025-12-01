@@ -6,15 +6,35 @@ public class RatingState {
     private Integer currentRating = null;
     private String averageRatingLabel = "N/A";
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public String getMessage() {
+        return message;
+    }
 
-    public boolean isSuccess() { return success; }
-    public void setSuccess(boolean success) { this.success = success; }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-    public Integer getCurrentRating() { return currentRating; }
-    public void setCurrentRating(Integer rating) { this.currentRating = rating; }
+    public boolean isSuccess() {
+        return success;
+    }
 
-    public String getAverageRatingLabel() { return averageRatingLabel; }
-    public void setAverageRatingLabel(String label) { this.averageRatingLabel = label; }
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public Integer getCurrentRating() {
+        return currentRating;
+    }
+
+    public void setCurrentRating(Integer rating) {
+        this.currentRating = rating;
+    }
+
+    public String getAverageRatingLabel() {
+        return averageRatingLabel;
+    }
+
+    public void setAverageRatingLabel(String label) {
+        this.averageRatingLabel = label;
+    }
 }

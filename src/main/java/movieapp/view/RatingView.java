@@ -70,7 +70,8 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         inputPanel.add(new JLabel(RatingViewModel.RATING_LABEL), gbc);
 
         gbc.gridx = 1;
@@ -79,7 +80,8 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         sliderValueLabel.setForeground(Color.BLUE);
         inputPanel.add(sliderValueLabel, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         ratingSlider = new JSlider(1, 10, 5);
@@ -118,7 +120,8 @@ public class RatingView extends JPanel implements PropertyChangeListener {
             ratingSlider.setValue(rating);
             sliderValueLabel.setText(String.valueOf(rating));
             removeButton.setEnabled(true);
-        } else {
+        }
+        else {
             currentRatingLabel.setText("Current Rating: Not Rated");
             currentRatingLabel.setForeground(Color.GRAY);
             removeButton.setEnabled(false);
@@ -131,7 +134,8 @@ public class RatingView extends JPanel implements PropertyChangeListener {
         if (averageRatingText != null && !averageRatingText.equals("N/A")) {
             averageRatingLabel.setText("Average Rating: ⭐ " + averageRatingText);
             averageRatingLabel.setForeground(new Color(255, 140, 0));
-        } else {
+        }
+        else {
             averageRatingLabel.setText("Average Rating: N/A");
             averageRatingLabel.setForeground(Color.GRAY);
         }
@@ -151,7 +155,8 @@ public class RatingView extends JPanel implements PropertyChangeListener {
                             JOptionPane.INFORMATION_MESSAGE);
 
                     updateRatingDisplay(state.getCurrentRating());
-                } else {
+                }
+                else {
                     JOptionPane.showMessageDialog(this,
                             state.getMessage(),
                             "Error",
