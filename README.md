@@ -12,20 +12,26 @@ to fetch real-time movie data.
   - Log in with username and password
   - Stay logged in while using the main tabbed interface
 
-- **Movie Browsing & Search**
-  - View popular and recent movies on the home page
-  - Search for movies by keyword
-  - Open a detailed movie view with description and rating
-
 - **Watchlist**
   - Add movies to a personal watchlist
   - Remove movies from the watchlist
   - View your watchlist in a dedicated “My Watchlist” tab
 
-- **Ratings & Comments**
+- **Ratings**
   - Rate movies and update your rating
+  - See average rating for a movie
+
+- **Comments**
   - Post comments for a specific movie
   - View comments related to a movie
+
+- **Movie Browsing**
+  - View top popular and most recent movies on the home page
+  - Search for movies by keyword
+  - Open a detailed movie view with description and rating
+
+- **Searching for a Movie**
+  - Enter keywords to search for movies
 
 ## Architecture Overview
 
