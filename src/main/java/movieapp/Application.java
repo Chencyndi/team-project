@@ -94,7 +94,7 @@ public class Application {
                 new PostCommentInteractor(commentDB, userDB, commentPresenter)
         );
 
-        /** ---------- Login Objects for HomePageView ----------- */
+//        /** ---------- Login Objects for HomePageView ----------- */
         LoginViewModel loginVM = new LoginViewModel();
         LoginController loginController = new LoginController(
                 new LoginInteractor(userDB, new LoginPresenter(loginVM) {
