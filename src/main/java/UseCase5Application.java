@@ -6,6 +6,7 @@ import movieapp.view.MovieListSwingView;
 import javax.swing.SwingUtilities;
 
 public class UseCase5Application {
+        
     public static void main(String[] args) {
 
         // --- Shared state (Interface Adapters) ---
