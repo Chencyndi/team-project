@@ -152,17 +152,237 @@ class PostCommentInteractorTest {
         }
     }
 
+    @Test
+    void execute_validatesNullCommenter() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                null,
+                "Some comment",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("username can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesBlankCommenter() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "   ",
+                "Some comment",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("username can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesEmptyCommenter() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "",
+                "Some comment",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("username can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesNullComment() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "alice",
+                null,
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("comments can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesBlankComment() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "alice",
+                "   ",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("comments can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesEmptyComment() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "alice",
+                "",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("comments can't be null", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_validatesNullMovieID() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "alice",
+                "Some comment",
+                null
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("Movie ID is required for posting a comment", presenter.validationError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_handlesUserNotFound() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "nonexistent",
+                "Some comment",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertEquals("user is not exist", presenter.userNotFoundError);
+        assertNull(presenter.successData);
+        assertNull(commentDAO.addedComment);
+        assertNull(commentDAO.repliedComment);
+    }
+
+    @Test
+    void execute_generatesUUIDForTopLevelComment() {
+        final InMemoryCommentDAO commentDAO = new InMemoryCommentDAO();
+        final InMemoryUserDAO userDAO = new InMemoryUserDAO(new User("alice", "pass"));
+        final PresenterStub presenter = new PresenterStub();
+        final PostCommentInteractor interactor = new PostCommentInteractor(commentDAO, userDAO, presenter);
+
+        final PostCommentInputData input = new PostCommentInputData(
+                null,
+                "alice",
+                "Great movie!",
+                42
+        );
+
+        final PostCommentOutputData result = interactor.execute(input);
+
+        assertNotNull(result);
+        assertNotNull(result.getCommentId());
+        assertNotEquals("", result.getCommentId());
+        assertEquals("alice", result.getCommenter());
+        assertEquals("Great movie!", result.getText());
+
+        assertNotNull(commentDAO.addedComment);
+        assertEquals(result.getCommentId(), commentDAO.addedComment.getCommentID());
+        assertEquals("alice", commentDAO.addedComment.getCommenter().getUsername());
+        assertEquals("Great movie!", commentDAO.addedComment.getText());
+        assertEquals(42, commentDAO.addedComment.getMovieID());
+        assertNull(commentDAO.repliedComment);
+
+        assertSame(result, presenter.successData);
+    }
+
     private static final class PresenterStub implements PostCommentOutputBoundary {
         private PostCommentOutputData successData;
+        private String validationError;
+        private String userNotFoundError;
 
         @Override
         public PostCommentOutputData presentValidationError(String errorMessage) {
-            throw new AssertionError("Unexpected validation error: " + errorMessage);
+            this.validationError = errorMessage;
+            return new PostCommentOutputData(null, null, null);
         }
 
         @Override
         public PostCommentOutputData presentUserNotFound(String errorMessage) {
-            throw new AssertionError("Unexpected missing user: " + errorMessage);
+            this.userNotFoundError = errorMessage;
+            return new PostCommentOutputData(null, null, null);
         }
 
         @Override
