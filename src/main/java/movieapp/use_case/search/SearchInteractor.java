@@ -19,7 +19,7 @@ public class SearchInteractor implements SearchInputBoundary {
     public void execute(SearchInputData inputData) {
         try {
             // Validate input
-            if (inputData.getSearchQuery() == null || inputData.getSearchQuery().isEmpty()) {
+            if (inputData.getSearchQuery().isEmpty()) {
                 outputBoundary.prepareFailView("Please enter a search term");
                 return;
             }
@@ -34,7 +34,7 @@ public class SearchInteractor implements SearchInputBoundary {
                     "Found " + topMovies.size() + " movies", topMovies);
             outputBoundary.prepareSuccessView(outputData, inputData.getSearchQuery());
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             outputBoundary.prepareFailView("Error: " + e.getMessage());
         }
     }

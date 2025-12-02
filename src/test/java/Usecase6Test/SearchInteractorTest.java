@@ -1,6 +1,8 @@
 package Usecase6Test;
 
+import data_access.InMemoryUserDAO;
 import movieapp.entity.Movie;
+import movieapp.entity.User;
 import movieapp.interface_adapter.search.MovieRepository;
 import movieapp.use_case.search.*;
 import org.junit.jupiter.api.Test;
@@ -15,9 +17,9 @@ public class SearchInteractorTest {
     void searchSuccess() {
         InMemoryMovieRepository repo = new InMemoryMovieRepository();
         repo.addMovie(new Movie("Movie1", "morning", 8.0, null));
-        repo.addMovie(new Movie("Movie2","noon", 12.0, null));
-        repo.addMovie(new Movie("Movie3","night", 8.0, null));
-        repo.addMovie(new Movie("Movie4","sunrise",0.0,null));
+        repo.addMovie(new Movie("Movie2", "noon", 12.0, null));
+        repo.addMovie(new Movie("Movie3", "night", 8.0, null));
+        repo.addMovie(new Movie("Movie4", "sunrise", 0.0, null));
 
         SearchInputData input = new SearchInputData("Movie");
 
@@ -39,13 +41,14 @@ public class SearchInteractorTest {
         SearchInputBoundary interactor = new SearchInteractor(repo, presenter);
         interactor.execute(input);
     }
+
     @Test
     void searchSuccessWith2Results() {
         InMemoryMovieRepository repo = new InMemoryMovieRepository();
         repo.addMovie(new Movie("Movie11", "morning", 8.0, null));
-        repo.addMovie(new Movie("Movie12","noon", 12.0, null));
-        repo.addMovie(new Movie("Movie3","night", 8.0, null));
-        repo.addMovie(new Movie("Movie4","sunrise",0.0,null));
+        repo.addMovie(new Movie("Movie12", "noon", 12.0, null));
+        repo.addMovie(new Movie("Movie3", "night", 8.0, null));
+        repo.addMovie(new Movie("Movie4", "sunrise", 0.0, null));
 
         SearchInputData input = new SearchInputData("Movie1");
 
@@ -90,23 +93,33 @@ public class SearchInteractorTest {
         interactor.execute(input);
     }
 
-    private static class InMemoryMovieRepository implements MovieRepository {
-        private final List<Movie> movies = new ArrayList<>();
+    @Test
+    void searchUnexpectFail() {
+        InMemoryMovieRepository repo = new InMemoryMovieRepository();
+        repo.addMovie(new Movie("Movie11", "morning", 8.0, null));
 
-        public void addMovie(Movie movie) {
-            movies.add(movie);
-        }
-
-        @Override
-        public List<Movie> searchMovies(String query) {
-            List<Movie> result = new ArrayList<>();
-            for (Movie m : movies) {
-                if (m.getTitle().toLowerCase().contains(query.toLowerCase())) {
-                    result.add(m);
-                }
+        SearchInputData input = new SearchInputData(""){
+            @Override
+            public String getSearchQuery() {
+                throw new IllegalArgumentException("Validation exception");
             }
-            return result;
-        }
-    }
+        };
 
+        SearchOutputBoundary presenter = new SearchOutputBoundary() {
+            @Override
+            public void prepareSuccessView(SearchOutputData outputData, String searchQuery) {
+                fail("Unexpected success");
+            }
+
+            @Override
+            public void prepareFailView(String errorMessage) {
+                assertEquals("Error: Validation exception", errorMessage);
+            }
+        };
+
+        SearchInputBoundary interactor = new SearchInteractor(repo, presenter);
+        interactor.execute(input);
+    }
 }
+
+
