@@ -57,3 +57,10 @@ The project follows a layered / clean architecture style with clear separation o
   - ![comments.png](docs/screenshots/comments.png)
   - ![rating.png](docs/screenshots/rating.png)
 
+## Addtionl Information
+The entire CA structuion will be the HomePageView connects to all controllers adn viewmodel, except the create 
+and login feature. 
+
+All view class in view pakage (except HomePage, CreateAccount, Login) are class being created for demo. 
+The demo of use case are name in "UseCase*Application".
+
