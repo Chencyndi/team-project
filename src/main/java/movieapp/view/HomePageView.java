@@ -2,7 +2,7 @@ package movieapp.view;
 
 import movieapp.data_access.CommentDataAccessObject;
 import movieapp.data_access.DatabaseWatchlistDAO;
-import movieapp.data_access.TMDBMovieRepository;
+import movieapp.data_access.TMDBMovieAPIAccess;
 import movieapp.entity.Movie;
 import movieapp.interface_adapter.comment.PostCommentController;
 import movieapp.interface_adapter.comment.PostCommentViewModel;
@@ -234,7 +234,7 @@ public class HomePageView extends JPanel {
             displayMovies(currentMovies);
             return;
         }
-        MovieRepository movieRepository = new TMDBMovieRepository();
+        MovieRepository movieRepository = new TMDBMovieAPIAccess();
         SearchViewModel searchViewModel = new SearchViewModel();
         SearchPresenter searchPresenter = new SearchPresenter(searchViewModel);
         SearchInputBoundary searchInteractor = new SearchInteractor(movieRepository, searchPresenter);

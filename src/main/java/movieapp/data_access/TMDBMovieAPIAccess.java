@@ -3,14 +3,18 @@ package movieapp.data_access;
 import io.github.cdimascio.dotenv.Dotenv;
 import movieapp.entity.Comment;
 import movieapp.entity.Movie;
+import movieapp.interface_adapter.search.MovieRepository;
 import movieapp.use_case.movielist.MovieDataSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Frameworks & Drivers layer implementation of MovieDataSource.
@@ -18,7 +22,7 @@ import java.util.List;
  * Communicates with the TMDB API using HTTP and returns Movie entities.
  * No business logic. No UI. No use case knowledge.
  */
-public class TMDBMovieAPIAccess implements MovieDataSource {
+public class TMDBMovieAPIAccess implements MovieDataSource, MovieRepository {
 
     private static final Dotenv dotenv = Dotenv.configure()
             .directory("./")
@@ -190,5 +194,56 @@ public class TMDBMovieAPIAccess implements MovieDataSource {
 
         Movie movie = parseMovie(json);
         return movie;
+    }
+    @Override
+    public List<Movie> searchMovies(String query) {
+        List<Movie> movies = new ArrayList<>();
+
+        try {
+            String urlString = "https://api.themoviedb.org/3/search/movie?api_key=" + API_KEY + "&query=" + query.replace(" ", "%20");
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            if (conn.getResponseCode() != 200) {
+                throw new RuntimeException("API request failed");
+            }
+
+            Scanner scanner = new Scanner(url.openStream());
+            StringBuilder response = new StringBuilder();
+            while (scanner.hasNext()) {
+                response.append(scanner.nextLine());
+            }
+            scanner.close();
+
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray results = jsonResponse.getJSONArray("results");
+
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject movieData = results.getJSONObject(i);
+                Movie movie = createMovieFromJSON(movieData);
+                movies.add(movie);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to search movies: " + e.getMessage());
+        }
+
+        return movies;
+    }
+    @Override
+    // method for the inmemory data access, which will not be use in the normal application.
+    public void addMovie(Movie movie) {
+        return;
+    }
+
+    private Movie createMovieFromJSON(JSONObject movieData) {
+        String title = movieData.getString("title");
+        String overview = movieData.getString("overview");
+        double rating = movieData.getDouble("vote_average");
+        List<Comment> comments = new ArrayList<>(); // Empty comments for now
+
+        return new Movie(title, overview, rating, comments);
     }
 }

@@ -3,7 +3,6 @@ package movieapp.interface_adapter.login;
 
 import movieapp.use_case.login.LoginOutputBoundary;
 import movieapp.use_case.login.LoginOutputData;
-import movieapp.view.LoginView;
 
 public class LoginPresenter implements LoginOutputBoundary {
     private LoginViewModel loginViewModel;

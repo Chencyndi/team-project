@@ -1,7 +1,6 @@
 // SearchView.java
 package movieapp.view;
 
-import movieapp.entity.Movie;
 import movieapp.interface_adapter.search.MovieViewModel;
 import movieapp.interface_adapter.search.SearchController;
 import movieapp.interface_adapter.search.SearchViewModel;

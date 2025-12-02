@@ -1,10 +1,5 @@
 package movieapp.interface_adapter.login;
 
-import movieapp.entity.User;
-import movieapp.interface_adapter.ViewModel;
-
-import java.util.ArrayList;
-
 /**
  * The View Model for the Login View.
  */
