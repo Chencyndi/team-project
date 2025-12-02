@@ -17,12 +17,20 @@ public class MovieController {
         this.fetchMoviesInteractor = fetchMoviesInteractor;
     }
 
+    /**
+     * Triggered when the UI requests the 100 most popular movies.
+     * Creates the input data and forwards it to the interactor.
+     */
     public void onPopularMoviesRequested() {
         FetchMoviesInputData inputData =
                 new FetchMoviesInputData(DEFAULT_TARGET_COUNT, MovieCategory.POPULAR);
         fetchMoviesInteractor.fetchMovies(inputData);
     }
 
+    /**
+     * Triggered when the UI requests the 100 most recently released movies.
+     * Builds the appropriate input data and delegates to the interactor.
+     */
     public void onRecentMoviesRequested() {
         FetchMoviesInputData inputData =
                 new FetchMoviesInputData(DEFAULT_TARGET_COUNT, MovieCategory.RECENT);
@@ -30,7 +38,9 @@ public class MovieController {
     }
 
     /**
-     * Generic refresh handler.
+     * Generic refresh operation used when the view wants to reload
+     * any category of movie list. Keeps UI logic thin by always delegating
+     * to the use-case interactor with the correct input data.
      */
     public void onRefreshRequested(MovieCategory category) {
         FetchMoviesInputData inputData =

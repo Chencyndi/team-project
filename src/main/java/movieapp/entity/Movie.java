@@ -2,8 +2,11 @@ package movieapp.entity;
 
 import java.util.List;
 
+/**
+ * Domain entity representing a Movie.
+ */
 public class Movie {
-
+    
     private final int id;
     private final String title;
     private final String overview;
